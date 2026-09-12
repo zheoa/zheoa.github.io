@@ -426,7 +426,120 @@
       margin-bottom: 12px;
     }
     .weights-hint strong { color: var(--text); }
-      </style>
+          /* Curated Combos extras */
+    .combo-slots-preview {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .combo-slot-chip {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .combo-slot-chip img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+    .slot-label {
+      display: inline-block;
+      background: var(--yellow-light);
+      color: var(--yellow-darker);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 10px;
+      margin-right: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Dashboard */
+    .dash-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 20px;
+      background: var(--surface);
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .range-btn {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--muted);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+    .range-btn:hover { border-color: var(--yellow); color: var(--text); }
+    .range-btn.active {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--text);
+    }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .dash-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .dash-card .dash-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--yellow-darker);
+      line-height: 1.1;
+      word-break: break-word;
+    }
+    .dash-card .dash-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .dash-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .dash-chart-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      height: 320px;
+    }
+    .dash-section-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 700px) {
+      .dash-two-col { grid-template-columns: 1fr; }
+    }
+ </style>
 </head>
 <body>
 
@@ -991,9 +1104,123 @@
       </div>
     </div>
   </div>
-    <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ============================================================
+       CURATED COMBO MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="curatedModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="curatedModalTitle">Add Curated Combo</h2>
+        <button class="modal-close" onclick="closeCuratedModal()">&times;</button>
+      </div>
+      <form id="curatedForm" onsubmit="saveCurated(event)">
+        <input type="hidden" id="editCuratedId" value="" />
 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="curatedContextInput">Context *</label>
+            <select id="curatedContextInput" required>
+              <option value="">Select context…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="curatedAudienceInput">Audience *</label>
+            <select id="curatedAudienceInput" required onchange="onCuratedAudienceChange()">
+              <option value="">Select audience…</option>
+              <option value="women">Women</option>
+              <option value="men">Men</option>
+              <option value="kids">Kids</option>
+              <option value="unisex">Unisex</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Slot 1 — Top (locked)</div>
+          <div class="form-group">
+            <label for="curatedSlot1Input">Product *</label>
+            <select id="curatedSlot1Input" required>
+              <option value="">Select product…</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Slot 2 — Bottom (locked)</div>
+          <div class="form-group">
+            <label for="curatedSlot2Input">Product *</label>
+            <select id="curatedSlot2Input" required>
+              <option value="">Select product…</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Slot 3 (switchable)</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="curatedSlot3OptionInput">Option</label>
+              <select id="curatedSlot3OptionInput" onchange="onCuratedSlot3OptionChange()">
+                <option value="footwear">Footwear</option>
+                <option value="headgear">Headgear</option>
+                <option value="sunglasses">Sunglasses</option>
+                <option value="bag">Bag</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="curatedSlot3Input">Product</label>
+              <select id="curatedSlot3Input">
+                <option value="">— None —</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Slot 4 (switchable)</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="curatedSlot4OptionInput">Option</label>
+              <select id="curatedSlot4OptionInput" onchange="onCuratedSlot4OptionChange()">
+                <option value="accessory">Accessory</option>
+                <option value="watch">Watch</option>
+                <option value="headgear">Headgear</option>
+                <option value="sunglasses">Sunglasses</option>
+                <option value="bag">Bag</option>
+                <option value="jewellery">Jewellery</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="curatedSlot4Input">Product</label>
+              <select id="curatedSlot4Input">
+                <option value="">— None —</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Meta</div>
+          <div class="form-group">
+            <label for="curatedNotesInput">Notes</label>
+            <textarea id="curatedNotesInput" rows="2" placeholder="Optional styling note for this combo…"></textarea>
+          </div>
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="curatedFeaturedInput" />
+            <label for="curatedFeaturedInput" style="margin:0;font-weight:600;font-size:0.9rem;">⭐ Featured</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeCuratedModal()">Cancel</button>
+          <button type="submit" class="btn btn-save" id="curatedSaveBtn">Save Combo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script>
     // ============================================================
     // SUPABASE INIT
@@ -1041,7 +1268,7 @@
 
     // Currently edited context for weights modal
     let weightsEditingContextId = null;
-
+    
     // Filters
     let categoryFilterAudience = 'all';
     let categoryFilterParent = 'all';
@@ -1052,6 +1279,19 @@
     let productFilterBrand = 'all';
     let productSearchQuery = '';
     let productShowDeleted = false;
+    
+    let allCuratedCombos = [];
+
+    // Curated filters
+    let curatedFilterContext  = 'all';
+    let curatedFilterAudience = 'all';
+    let curatedFilterFeatured = 'all';
+
+    // Dashboard state
+    let dashRange       = '30d';
+    let dashChart       = null;
+    let dashProductMap  = {};
+    let dashContextMap  = {};
 
     // ============================================================
     // TAB DEFINITIONS
@@ -1176,6 +1416,8 @@
         if (t.key === 'affiliates') return `<div class="tab-content" id="tab-affiliates">${affiliatesTabHTML()}</div>`;
         if (t.key === 'articles')   return `<div class="tab-content" id="tab-articles">${articlesTabHTML()}</div>`;
         if (t.key === 'contexts')   return `<div class="tab-content" id="tab-contexts">${contextsTabHTML()}</div>`;
+        if (t.key === 'curated')    return `<div class="tab-content" id="tab-curated">${curatedTabHTML()}</div>`;
+        if (t.key === 'dashboard')  return `<div class="tab-content" id="tab-dashboard">${dashboardTabHTML()}</div>`;
         return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
             <span class="icon">${t.label.split(' ')[0]}</span>
@@ -1233,6 +1475,16 @@
 
       if (tab === 'contexts') {
         await loadContexts();
+      }
+
+      if (tab === 'curated') {
+        if (allContexts.length === 0)  await loadContexts();
+        if (allProducts.length === 0)  await loadProducts();
+        await loadCuratedCombos();
+      }
+
+      if (tab === 'dashboard') {
+        await loadDashboard();
       }
     }
         // ============================================================
@@ -3147,7 +3399,553 @@
         btn.textContent = 'Save Weights';
       }
     }
+    // ============================================================
+    // ============  CURATED COMBOS  ==============================
+    // ============================================================
+    function curatedTabHTML() {
+      return `
+        <div class="toolbar">
+          <label>Context:
+            <select id="curFilterContext" onchange="onCuratedFilterChange()">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>Audience:
+            <select id="curFilterAudience" onchange="onCuratedFilterChange()">
+              <option value="all">All</option>
+              <option value="women">Women</option>
+              <option value="men">Men</option>
+              <option value="kids">Kids</option>
+              <option value="unisex">Unisex</option>
+            </select>
+          </label>
+          <label>Featured:
+            <select id="curFilterFeatured" onchange="onCuratedFilterChange()">
+              <option value="all">All</option>
+              <option value="yes">Featured only</option>
+              <option value="no">Not featured</option>
+            </select>
+          </label>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="openCuratedModal()">+ Add Curated Combo</button>
+        </div>
 
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Context</th>
+                <th>Audience</th>
+                <th>Combo</th>
+                <th>Featured</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="curatedTableBody">
+              <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function loadCuratedCombos() {
+      const tbody = document.getElementById('curatedTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
+
+      if (allContexts.length === 0) await loadContexts();
+      if (allProducts.length === 0) await loadProducts();
+
+      const { data, error } = await supabaseClient
+        .from('curated_combos')
+        .select('id, context_id, audience, slot_1_product_id, slot_2_product_id, slot_3_product_id, slot_4_product_id, slot_3_option_key, slot_4_option_key, notes, is_featured, created_at')
+        .order('is_featured', { ascending: false })
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('loadCuratedCombos error:', error);
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state" style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      allCuratedCombos = data || [];
+
+      const contextMap = {}; allContexts.forEach(c => { contextMap[c.id] = c; });
+      const productMap = {}; allProducts.forEach(p => { productMap[p.id] = p; });
+
+      // Populate context filter (one-time)
+      const ctxFilter = document.getElementById('curFilterContext');
+      if (ctxFilter && ctxFilter.options.length <= 1) {
+        allContexts.slice().sort((a,b) => a.display_name.localeCompare(b.display_name)).forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = `${c.display_name} (${c.context_type})`;
+          ctxFilter.appendChild(opt);
+        });
+      }
+
+      let filtered = allCuratedCombos;
+      if (curatedFilterContext !== 'all')  filtered = filtered.filter(x => x.context_id === parseInt(curatedFilterContext));
+      if (curatedFilterAudience !== 'all') filtered = filtered.filter(x => x.audience === curatedFilterAudience);
+      if (curatedFilterFeatured === 'yes') filtered = filtered.filter(x => x.is_featured === true);
+      if (curatedFilterFeatured === 'no')  filtered = filtered.filter(x => x.is_featured !== true);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No curated combos match the current filters.</td></tr>';
+        return;
+      }
+
+      let rows = '';
+      filtered.forEach(c => {
+        const ctx = contextMap[c.context_id];
+        const ctxName = ctx ? `${ctx.icon || ''} ${ctx.display_name}` : `Context #${c.context_id}`;
+        const ctxType = ctx ? ctx.context_type : '';
+
+        const slotNames = [
+          { label: 'Top',       id: c.slot_1_product_id },
+          { label: 'Bottom',    id: c.slot_2_product_id },
+          { label: c.slot_3_option_key || 'Slot 3', id: c.slot_3_product_id },
+          { label: c.slot_4_option_key || 'Slot 4', id: c.slot_4_product_id }
+        ];
+
+        let slotsHtml = '<div class="combo-slots-preview">';
+        slotNames.forEach((s, i) => {
+          const p = s.id ? productMap[s.id] : null;
+          const title = p ? p.name : '—';
+          const img = p && p.image_url ? `<img src="${escapeHtml(p.image_url)}" onerror="this.style.display='none';" />` : (p ? '' : '—');
+          slotsHtml += `<div class="combo-slot-chip" title="${escapeHtml(s.label)}: ${escapeHtml(title)}">${img}</div>`;
+        });
+        slotsHtml += '</div>';
+
+        rows += `<tr>
+          <td>${c.id}</td>
+          <td>${escapeHtml(ctxName)}<br><span class="muted" style="font-size:0.75rem;">${escapeHtml(ctxType)}</span></td>
+          <td><span class="badge badge-${escapeHtml(c.audience)}">${escapeHtml(c.audience)}</span></td>
+          <td>${slotsHtml}</td>
+          <td>${c.is_featured ? '<span class="badge badge-featured">⭐ Yes</span>' : '<span class="muted">—</span>'}</td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="btn-edit" onclick="editCurated(${c.id})">✏️ Edit</button>
+            <button class="btn-danger" onclick="deleteCurated(${c.id})">🗑️ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function onCuratedFilterChange() {
+      curatedFilterContext  = document.getElementById('curFilterContext').value;
+      curatedFilterAudience = document.getElementById('curFilterAudience').value;
+      curatedFilterFeatured = document.getElementById('curFilterFeatured').value;
+      loadCuratedCombos();
+    }
+
+    async function openCuratedModal(combo) {
+      const isEdit = !!combo;
+      if (allContexts.length === 0) await loadContexts();
+      if (allProducts.length === 0) await loadProducts();
+
+      document.getElementById('curatedModalTitle').textContent = isEdit ? 'Edit Curated Combo' : 'Add Curated Combo';
+      document.getElementById('editCuratedId').value = isEdit ? combo.id : '';
+
+      // Populate context dropdown
+      const ctxSel = document.getElementById('curatedContextInput');
+      ctxSel.innerHTML = '<option value="">Select context…</option>';
+      allContexts.slice().sort((a,b) => a.display_name.localeCompare(b.display_name)).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.icon || ''} ${c.display_name} (${c.context_type})`;
+        if (isEdit && c.id === combo.context_id) opt.selected = true;
+        ctxSel.appendChild(opt);
+      });
+
+      document.getElementById('curatedAudienceInput').value = isEdit ? combo.audience : '';
+      document.getElementById('curatedSlot3OptionInput').value = isEdit ? (combo.slot_3_option_key || 'footwear') : 'footwear';
+      document.getElementById('curatedSlot4OptionInput').value = isEdit ? (combo.slot_4_option_key || 'accessory') : 'accessory';
+
+      // Populate 4 product dropdowns
+      const audience = isEdit ? combo.audience : '';
+      populateCuratedProductDropdown('curatedSlot1Input', audience, isEdit ? combo.slot_1_product_id : null);
+      populateCuratedProductDropdown('curatedSlot2Input', audience, isEdit ? combo.slot_2_product_id : null);
+      populateCuratedProductDropdown('curatedSlot3Input', audience, isEdit ? combo.slot_3_product_id : null);
+      populateCuratedProductDropdown('curatedSlot4Input', audience, isEdit ? combo.slot_4_product_id : null);
+
+      document.getElementById('curatedNotesInput').value = isEdit ? (combo.notes || '') : '';
+      document.getElementById('curatedFeaturedInput').checked = isEdit ? !!combo.is_featured : false;
+      document.getElementById('curatedSaveBtn').textContent = isEdit ? 'Update Combo' : 'Save Combo';
+
+      document.getElementById('curatedModal').classList.add('show');
+    }
+
+    function closeCuratedModal() {
+      document.getElementById('curatedModal').classList.remove('show');
+      document.getElementById('curatedForm').reset();
+      document.getElementById('editCuratedId').value = '';
+    }
+
+    function onCuratedAudienceChange() {
+      const audience = document.getElementById('curatedAudienceInput').value;
+      // Repopulate all four slot dropdowns
+      ['curatedSlot1Input', 'curatedSlot2Input', 'curatedSlot3Input', 'curatedSlot4Input'].forEach(id => {
+        const current = document.getElementById(id).value;
+        populateCuratedProductDropdown(id, audience, current ? parseInt(current) : null);
+      });
+    }
+
+    function onCuratedSlot3OptionChange() {
+      const audience = document.getElementById('curatedAudienceInput').value;
+      const current = document.getElementById('curatedSlot3Input').value;
+      populateCuratedProductDropdown('curatedSlot3Input', audience, current ? parseInt(current) : null);
+    }
+
+    function onCuratedSlot4OptionChange() {
+      const audience = document.getElementById('curatedAudienceInput').value;
+      const current = document.getElementById('curatedSlot4Input').value;
+      populateCuratedProductDropdown('curatedSlot4Input', audience, current ? parseInt(current) : null);
+    }
+
+    function populateCuratedProductDropdown(selectId, audience, preselectId) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      select.innerHTML = '<option value="">— None —</option>';
+
+      let pool = allProducts.filter(p => p.status === 'published' && p.deleted_at === null);
+      if (audience) pool = pool.filter(p => p.audience === audience);
+
+      pool.sort((a,b) => a.name.localeCompare(b.name));
+
+      pool.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `#${p.id} — ${p.name}`;
+        if (preselectId && p.id === preselectId) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    async function saveCurated(e) {
+      e.preventDefault();
+      const id = document.getElementById('editCuratedId').value;
+      const context_id = document.getElementById('curatedContextInput').value;
+      const audience = document.getElementById('curatedAudienceInput').value;
+      const slot_1_product_id = document.getElementById('curatedSlot1Input').value;
+      const slot_2_product_id = document.getElementById('curatedSlot2Input').value;
+      const slot_3_product_id = document.getElementById('curatedSlot3Input').value;
+      const slot_4_product_id = document.getElementById('curatedSlot4Input').value;
+      const slot_3_option_key = document.getElementById('curatedSlot3OptionInput').value;
+      const slot_4_option_key = document.getElementById('curatedSlot4OptionInput').value;
+      const notes = document.getElementById('curatedNotesInput').value.trim();
+      const is_featured = document.getElementById('curatedFeaturedInput').checked;
+
+      if (!context_id || !audience || !slot_1_product_id || !slot_2_product_id) {
+        alert('Please fill in Context, Audience, Slot 1, and Slot 2.');
+        return;
+      }
+
+      const payload = {
+        context_id: parseInt(context_id),
+        audience,
+        slot_1_product_id: parseInt(slot_1_product_id),
+        slot_2_product_id: parseInt(slot_2_product_id),
+        slot_3_product_id: slot_3_product_id ? parseInt(slot_3_product_id) : null,
+        slot_4_product_id: slot_4_product_id ? parseInt(slot_4_product_id) : null,
+        slot_3_option_key,
+        slot_4_option_key,
+        notes: notes || null,
+        is_featured
+      };
+
+      const btn = document.getElementById('curatedSaveBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      try {
+        if (id) {
+          const { error } = await supabaseClient.from('curated_combos').update(payload).eq('id', parseInt(id));
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient.from('curated_combos').insert(payload);
+          if (error) throw error;
+        }
+        closeCuratedModal();
+        await loadCuratedCombos();
+      } catch (err) {
+        console.error('saveCurated error:', err);
+        if (err.code === '23505') alert('Duplicate: this exact combo already exists for this context + audience.');
+        else alert('Error: ' + (err.message || 'Unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Update Combo' : 'Save Combo';
+      }
+    }
+
+    async function editCurated(id) {
+      const combo = allCuratedCombos.find(c => c.id === id);
+      if (!combo) { alert('Combo not found. Reload the tab.'); return; }
+      await openCuratedModal(combo);
+    }
+
+    async function deleteCurated(id) {
+      const combo = allCuratedCombos.find(c => c.id === id);
+      if (!combo) return;
+      if (!confirm('Delete this curated combo?')) return;
+
+      const { error } = await supabaseClient.from('curated_combos').delete().eq('id', id);
+      if (error) { alert('Error: ' + error.message); return; }
+      await loadCuratedCombos();
+    }
+
+    // ============================================================
+    // ============  DASHBOARD  ===================================
+    // ============================================================
+    function dashboardTabHTML() {
+      return `
+        <div class="dash-toolbar">
+          <span style="font-weight:700;font-size:0.9rem;color:var(--muted);">Range:</span>
+          <button class="range-btn active" data-range="30d" onclick="setDashRange('30d')">30 days</button>
+          <button class="range-btn" data-range="7d" onclick="setDashRange('7d')">7 days</button>
+          <button class="range-btn" data-range="1d" onclick="setDashRange('1d')">Today</button>
+          <button class="range-btn" data-range="90d" onclick="setDashRange('90d')">90 days</button>
+          <button class="range-btn" data-range="all" onclick="setDashRange('all')">All time</button>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="loadDashboard()" id="dashRefreshBtn">🔄 Refresh</button>
+        </div>
+
+        <div class="dash-grid" id="dashStatsGrid">
+          <div class="dash-card"><div class="dash-value" id="dashTotalClicks">—</div><div class="dash-label">Total Clicks</div></div>
+          <div class="dash-card"><div class="dash-value" id="dashUniqueVisitors">—</div><div class="dash-label">Unique Visitors</div></div>
+          <div class="dash-card"><div class="dash-value" id="dashTotalArticles">—</div><div class="dash-label">Live Articles</div></div>
+          <div class="dash-card"><div class="dash-value" id="dashTotalProducts">—</div><div class="dash-label">Published Products</div></div>
+          <div class="dash-card"><div class="dash-value" id="dashTopCountry">—</div><div class="dash-label">Top Country</div></div>
+          <div class="dash-card"><div class="dash-value" id="dashTopRetailer">—</div><div class="dash-label">Top Retailer</div></div>
+        </div>
+
+        <div class="dash-two-col">
+          <div>
+            <h3 class="dash-section-title">📈 Clicks by Affiliate Key</h3>
+            <div class="dash-chart-wrap"><canvas id="dashChart"></canvas></div>
+          </div>
+          <div>
+            <h3 class="dash-section-title">🌍 Clicks by Country</h3>
+            <div class="table-wrap" style="max-height:320px;overflow-y:auto;">
+              <table>
+                <thead><tr><th>Country</th><th>Clicks</th></tr></thead>
+                <tbody id="dashCountryBody"><tr><td colspan="2" class="empty-state">Loading…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-two-col">
+          <div>
+            <h3 class="dash-section-title">👕 Top Products</h3>
+            <div class="table-wrap" style="max-height:320px;overflow-y:auto;">
+              <table>
+                <thead><tr><th>Product</th><th>Clicks</th></tr></thead>
+                <tbody id="dashProductsBody"><tr><td colspan="2" class="empty-state">Loading…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3 class="dash-section-title">📄 Top Articles</h3>
+            <div class="table-wrap" style="max-height:320px;overflow-y:auto;">
+              <table>
+                <thead><tr><th>Article</th><th>Clicks</th></tr></thead>
+                <tbody id="dashArticlesBody"><tr><td colspan="2" class="empty-state">Loading…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="dash-section-title" style="margin-top:24px;">🔗 Top Links</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>URL</th><th>Clicks</th><th>Unique</th></tr></thead>
+            <tbody id="dashLinksBody"><tr><td colspan="3" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <h3 class="dash-section-title" style="margin-top:24px;">🕒 Recent Clicks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Affiliate Key</th><th>Link</th><th>Country</th></tr></thead>
+            <tbody id="dashRecentBody"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function setDashRange(range) {
+      dashRange = range;
+      document.querySelectorAll('.range-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.range === range);
+      });
+      loadDashboard();
+    }
+
+    function getDashDateRange() {
+      const now = new Date();
+      const end = new Date(now);
+      let start;
+
+      switch (dashRange) {
+        case '1d':
+          start = new Date(now);
+          start.setHours(0,0,0,0);
+          break;
+        case '7d':
+          start = new Date(now.getTime() - 7*24*60*60*1000);
+          break;
+        case '30d':
+          start = new Date(now.getTime() - 30*24*60*60*1000);
+          break;
+        case '90d':
+          start = new Date(now.getTime() - 90*24*60*60*1000);
+          break;
+        case 'all':
+          start = new Date(2020, 0, 1);
+          break;
+        default:
+          start = new Date(now.getTime() - 30*24*60*60*1000);
+      }
+
+      return { startISO: start.toISOString(), endISO: end.toISOString() };
+    }
+
+    async function loadDashboard() {
+      const refreshBtn = document.getElementById('dashRefreshBtn');
+      if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = '⏳ Loading…'; }
+
+      try {
+        const { startISO, endISO } = getDashDateRange();
+
+        // Fire the RPC and the counts in parallel
+        const [summaryRes, articlesRes, productsRes] = await Promise.all([
+          supabaseClient.rpc('get_dashboard_summary', { start_date: startISO, end_date: endISO }),
+          supabaseClient.from('articles').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+          supabaseClient.from('products').select('id', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null)
+        ]);
+
+        if (summaryRes.error) throw summaryRes.error;
+
+        const summary = summaryRes.data || {};
+
+        document.getElementById('dashTotalClicks').textContent = summary.total_clicks ?? 0;
+        document.getElementById('dashUniqueVisitors').textContent = summary.unique_visitors ?? 0;
+        document.getElementById('dashTotalArticles').textContent = articlesRes.count ?? '—';
+        document.getElementById('dashTotalProducts').textContent = productsRes.count ?? '—';
+
+        // Countries
+        const countries = summary.country_stats || [];
+        document.getElementById('dashTopCountry').textContent = countries.length > 0 ? countries[0].country : '—';
+        const countryBody = document.getElementById('dashCountryBody');
+        if (countries.length === 0) {
+          countryBody.innerHTML = '<tr><td colspan="2" class="empty-state">No data in range.</td></tr>';
+        } else {
+          countryBody.innerHTML = countries.map(c =>
+            `<tr><td>${escapeHtml(c.country)}</td><td>${c.click_count}</td></tr>`
+          ).join('');
+        }
+
+        // Affiliate chart
+        const affiliates = summary.affiliate_breakdown || [];
+        const ctx = document.getElementById('dashChart')?.getContext('2d');
+        if (ctx) {
+          if (dashChart) dashChart.destroy();
+          dashChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: affiliates.map(a => a.affiliate_key),
+              datasets: [{
+                label: 'Clicks',
+                data: affiliates.map(a => a.click_count),
+                backgroundColor: '#ffdb10',
+                borderColor: '#b39b00',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: { y: { beginAtZero: true } }
+            }
+          });
+        }
+
+        // Top Products
+        const products = summary.product_breakdown || [];
+        const productBody = document.getElementById('dashProductsBody');
+        if (products.length === 0) {
+          productBody.innerHTML = '<tr><td colspan="2" class="empty-state">No product clicks in range.</td></tr>';
+        } else {
+          productBody.innerHTML = products.map(p =>
+            `<tr><td>${escapeHtml(p.product_name)}</td><td>${p.click_count}</td></tr>`
+          ).join('');
+        }
+
+        // Top Articles
+        const articles = summary.article_breakdown || [];
+        const articleBody = document.getElementById('dashArticlesBody');
+        if (articles.length === 0) {
+          articleBody.innerHTML = '<tr><td colspan="2" class="empty-state">No article clicks in range.</td></tr>';
+        } else {
+          articleBody.innerHTML = articles.map(a =>
+            `<tr><td>${escapeHtml(a.article_title)}</td><td>${a.click_count}</td></tr>`
+          ).join('');
+        }
+
+        // Top Links
+        const links = summary.top_links || [];
+        const linkBody = document.getElementById('dashLinksBody');
+        if (links.length === 0) {
+          linkBody.innerHTML = '<tr><td colspan="3" class="empty-state">No link clicks in range.</td></tr>';
+        } else {
+          linkBody.innerHTML = links.map(l => {
+            const display = l.link_url.length > 60 ? l.link_url.slice(0, 60) + '…' : l.link_url;
+            return `<tr>
+              <td><a href="${escapeHtml(l.link_url)}" target="_blank" rel="noopener" title="${escapeHtml(l.link_url)}">${escapeHtml(display)}</a></td>
+              <td>${l.click_count}</td>
+              <td>${l.unique_count}</td>
+            </tr>`;
+          }).join('');
+        }
+
+        // Top Retailer
+        const retailers = summary.retailer_breakdown || [];
+        document.getElementById('dashTopRetailer').textContent = retailers.length > 0 ? retailers[0].retailer_name : '—';
+
+        // Recent clicks
+        const { data: recent, error: recentErr } = await supabaseClient
+          .from('click_logs')
+          .select('created_at, affiliate_key, link_url, country_code')
+          .gte('created_at', startISO)
+          .lte('created_at', endISO)
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        const recentBody = document.getElementById('dashRecentBody');
+        if (recentErr || !recent || recent.length === 0) {
+          recentBody.innerHTML = '<tr><td colspan="4" class="empty-state">No clicks in range.</td></tr>';
+        } else {
+          recentBody.innerHTML = recent.map(r => {
+            const display = r.link_url && r.link_url.length > 40 ? r.link_url.slice(0, 40) + '…' : (r.link_url || '—');
+            return `<tr>
+              <td>${new Date(r.created_at).toLocaleString()}</td>
+              <td><code style="font-size:0.78rem;">${escapeHtml(r.affiliate_key || '—')}</code></td>
+              <td><a href="${escapeHtml(r.link_url || '#')}" target="_blank" rel="noopener">${escapeHtml(display)}</a></td>
+              <td>${escapeHtml(r.country_code || 'Unknown')}</td>
+            </tr>`;
+          }).join('');
+        }
+
+      } catch (err) {
+        console.error('loadDashboard error:', err);
+        alert('Dashboard error: ' + (err.message || 'Unknown error'));
+      } finally {
+        if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = '🔄 Refresh'; }
+      }
+    }
     // ============================================================
     // UTILITIES
     // ============================================================
@@ -3168,7 +3966,7 @@
     // ============================================================
     // MODAL — CLOSE ON OVERLAY CLICK / ESC
     // ============================================================
-     ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal', 'articleModal', 'contextModal', 'weightsModal'].forEach(id => {
+     ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal', 'articleModal', 'contextModal', 'weightsModal','curatedModal'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', function (e) {
         if (e.target === this) {
           if (id === 'categoryModal')  closeCategoryModal();
@@ -3179,6 +3977,7 @@
           if (id === 'articleModal')   closeArticleModal();
           if (id === 'contextModal')   closeContextModal();
           if (id === 'weightsModal')   closeWeightsModal();
+          if (id === 'curatedModal')   closeCuratedModal();
         }
       });
     });
@@ -3192,6 +3991,7 @@
         closeArticleModal();
         closeContextModal();
         closeWeightsModal();
+        closeCuratedModal();
       }
     });
 
