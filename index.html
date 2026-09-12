@@ -972,7 +972,7 @@
     // ============================================================
     // SUPABASE INIT
     // ============================================================
-        const config = window.ZHEOA_CONFIG || {};
+      const config = window.ZHEOA_CONFIG || {};
     if (!config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
       console.error('config.js is missing SUPABASE_URL or SUPABASE_ANON_KEY');
     }
@@ -981,15 +981,6 @@
       config.SUPABASE_URL,
       config.SUPABASE_ANON_KEY
     );
-    } else {
-      document.getElementById('bootStatus').textContent = '✅ Connected';
-    }
-
-    const supabaseClient = window.supabase.createClient(
-      config.SUPABASE_URL,
-      config.SUPABASE_ANON_KEY
-    );
-
     // ============================================================
     // CONSENT + STORAGE (GDPR-safe)
     // ============================================================
