@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie Policy — Zheoa</title>
+  <meta name="description" content="How Zheoa uses cookies and localStorage." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --yellow: #ffdb10; --yellow-dark: #e6c200; --yellow-darker: #b39b00; --yellow-light: #fff8e1; --bg: #fdfdfc; --surface: #ffffff; --text: #1a1a2e; --muted: #5a5a72; --border: #eaeaea; --shadow: 0 8px 30px rgba(0, 0, 0, 0.06); --radius: 16px; --max-width: 820px; --nav-height: 68px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; display: flex; flex-direction: column; }
+    main { flex: 1; }
+    a { color: var(--yellow-darker); text-decoration: underline; text-underline-offset: 2px; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-bottom: 2px solid var(--yellow); height: var(--nav-height); display: flex; align-items: center; }
+    .nav { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; color: var(--yellow-darker); text-decoration: none; }
+    .logo-mark { width: 38px; height: 38px; border-radius: 10px; background: var(--yellow); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .nav-links { display: flex; gap: 28px; font-weight: 600; font-size: 0.95rem; }
+    .nav-links a { padding: 4px 0; border-bottom: 3px solid transparent; transition: 0.2s; color: var(--text); text-decoration: none; }
+    .nav-links a:hover, .nav-links a.active { border-bottom-color: var(--yellow); color: var(--yellow-darker); }
+    .menu-toggle { display: none; font-size: 1.6rem; background: none; border: none; cursor: pointer; padding: 4px 8px; }
+    .page-header { padding: 40px 0 22px; margin-bottom: 26px; border-bottom: 2px solid var(--yellow); }
+    .page-header h1 { font-size: clamp(2rem, 4.5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .page-header .updated { color: var(--muted); font-size: 0.9rem; }
+    .page-header .updated strong { color: var(--text); }
+    .page-header .tagline { color: var(--muted); font-size: 0.98rem; margin-top: 8px; }
+    section.policy { margin-bottom: 30px; }
+    section.policy h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    section.policy p, section.policy li { color: var(--muted); margin-bottom: 10px; font-size: 0.95rem; }
+    section.policy ul { margin-left: 22px; margin-bottom: 12px; }
+    section.policy ul li { margin-bottom: 6px; }
+    section.policy strong { color: var(--text); }
+    section.policy code { background: #f0f2f5; padding: 1px 6px; border-radius: 4px; font-size: 0.85em; font-family: 'Courier New', monospace; }
+    .highlight-box { background: var(--yellow-light); border-left: 4px solid var(--yellow); padding: 14px 18px; border-radius: 10px; margin: 16px 0; }
+    .highlight-box p { margin-bottom: 4px; }
+    .storage-table-wrap { overflow-x: auto; margin: 16px 0 22px; border: 1px solid var(--border); border-radius: var(--radius); }
+    .storage-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .storage-table th { background: #fafafa; text-align: left; padding: 12px 14px; font-weight: 700; border-bottom: 2px solid var(--border); white-space: nowrap; }
+    .storage-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--muted); }
+    .storage-table tr:last-child td { border-bottom: none; }
+    .badge-essential { background: #e8f5e9; color: #2e7d32; font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; }
+    .badge-functional { background: #e3f2fd; color: #0d47a1; font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; }
+    .badge-performance { background: #fff3e0; color: #e65100; font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; }
+    .back-home { display: inline-block; margin-top: 12px; padding: 10px 26px; background: var(--yellow); color: var(--text); font-weight: 700; border-radius: 30px; text-decoration: none; }
+    .back-home:hover { background: var(--yellow-dark); color: var(--text); }
+    footer { background: #0d1c26; color: #b0c4d0; padding: 48px 0 28px; margin-top: 50px; }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+    .footer-brand .logo { color: var(--yellow); font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .footer-brand p { max-width: 340px; margin-top: 10px; font-size: 0.9rem; }
+    .footer-links { display: flex; gap: 48px; flex-wrap: wrap; }
+    .footer-links h4 { color: #fff; margin-bottom: 8px; font-size: 0.95rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin: 5px 0; font-size: 0.9rem; }
+    .footer-links a { color: #b0c4d0; text-decoration: none; }
+    .footer-links a:hover { color: #fff; }
+    .copyright { border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 32px; padding-top: 20px; font-size: 0.8rem; text-align: center; color: #8ba0af; }
+    @media (max-width: 700px) {
+      .menu-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: var(--nav-height); left: 0; right: 0; background: white; padding: 24px; border-bottom: 2px solid var(--yellow); gap: 16px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06); }
+      .nav-links.open { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav">
+      <a href="index.html" class="logo"><span class="logo-mark">👗</span> Zheoa</a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="women.html">Women</a>
+        <a href="men.html">Men</a>
+        <a href="kids.html">Kids</a>
+        <a href="combo.html">Combo Builder</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+      <button class="menu-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <div class="page-header">
+        <h1>🍪 Cookie Policy</h1>
+        <div class="updated"><strong>Last updated:</strong> 1 September 2026</div>
+        <p class="tagline">What Zheoa stores in your browser and why.</p>
+      </div>
+
+      <section class="policy">
+        <h2>Cookies vs. Local Storage</h2>
+        <p><strong>Cookies</strong> are small text files sent with every HTTP request. <strong>Local storage</strong> is browser-side storage that isn't automatically sent to our servers.</p>
+        <p>Zheoa primarily uses <strong>localStorage</strong> rather than traditional cookies. This reduces the amount of data that leaves your browser.</p>
+        <div class="highlight-box">
+          <p><strong>📌 Key point:</strong> We store minimal data locally, and none of it identifies you personally.</p>
+        </div>
+      </section>
+
+      <section class="policy">
+        <h2>What We Store</h2>
+        <div class="storage-table-wrap">
+          <table class="storage-table">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Purpose</th>
+                <th>Type</th>
+                <th>Expiry</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cookiesAccepted</code></td>
+                <td>Your consent preference (true / false).</td>
+                <td><span class="badge-essential">Essential</span></td>
+                <td>Persistent</td>
+              </tr>
+              <tr>
+                <td><code>visitorId</code></td>
+                <td>Random ID to distinguish you from other visitors for analytics.</td>
+                <td><span class="badge-functional">Functional</span></td>
+                <td>Persistent</td>
+              </tr>
+              <tr>
+                <td><code>userCountry</code></td>
+                <td>Detected country code for affiliate link resolution.</td>
+                <td><span class="badge-functional">Functional</span></td>
+                <td>1 hour (cached)</td>
+              </tr>
+              <tr>
+                <td><code>userCountryTimestamp</code></td>
+                <td>When country was last detected.</td>
+                <td><span class="badge-functional">Functional</span></td>
+                <td>1 hour</td>
+              </tr>
+              <tr>
+                <td><code>affiliate_links_*</code></td>
+                <td>Cached affiliate link mappings per product/article.</td>
+                <td><span class="badge-performance">Performance</span></td>
+                <td>1 hour</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>We do NOT use:</strong></p>
+        <ul>
+          <li>Third-party advertising cookies</li>
+          <li>Social media pixels (Facebook, TikTok, etc.)</li>
+          <li>Session recording or heatmap tools</li>
+        </ul>
+      </section>
+
+      <section class="policy">
+        <h2>Third-Party Cookies</h2>
+        <p>When you click certain links or load certain assets, these third parties may set cookies on your device:</p>
+        <ul>
+          <li><strong>Amazon Associates</strong> — conversion tracking if you click Amazon links.</li>
+          <li><strong>Impact.com</strong> — affiliate conversion tracking (loaded only after consent).</li>
+          <li><strong>Supabase</strong> — session cookies if you log in as an admin.</li>
+          <li><strong>Google Fonts</strong> — serves the Inter typeface. No cookies, but your IP is transmitted to Google.</li>
+        </ul>
+        <p>We do not control these cookies. Review each provider's own policy for details.</p>
+      </section>
+
+      <section class="policy">
+        <h2>Managing Your Preferences</h2>
+        <h3>Accept / Decline</h3>
+        <p>On first visit, a banner asks you to accept or decline non-essential storage. Your choice is stored and respected.</p>
+        <h3>Clear Local Storage</h3>
+        <p>You can clear all stored data at any time via your browser:</p>
+        <ul>
+          <li><strong>Chrome:</strong> Settings → Privacy and security → Clear browsing data → Cookies and other site data.</li>
+          <li><strong>Firefox:</strong> Settings → Privacy &amp; Security → Cookies and Site Data → Clear Data.</li>
+          <li><strong>Safari:</strong> Preferences → Privacy → Manage Website Data.</li>
+          <li><strong>Edge:</strong> Settings → Privacy, search, and services → Clear browsing data.</li>
+        </ul>
+        <p>If you decline, only essential consent preference is stored. Some features (personalized affiliate links) may not work optimally.</p>
+      </section>
+
+      <section class="policy">
+        <h2>Updates</h2>
+        <p>We may update this policy to reflect changes in technology or law. The "Last updated" date will be revised accordingly. Material changes will be announced on the site.</p>
+      </section>
+
+      <section class="policy">
+        <h2>Contact</h2>
+        <p>Questions about our cookie practices? Email <a href="mailto:privacy@zheoa.com">privacy@zheoa.com</a>.</p>
+      </section>
+
+      <a href="index.html" class="back-home">← Back to Home</a>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo"><span class="logo-mark">👗</span> Zheoa</div>
+          <p>Outfit combos for every occasion, season, and mood.</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="women.html">Women</a></li>
+              <li><a href="men.html">Men</a></li>
+              <li><a href="kids.html">Kids</a></li>
+              <li><a href="combo.html">Combo Builder</a></li>
+              <li><a href="shop.html">Shop</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+              <li><a href="affiliate-disclosure.html">Affiliate</a></li>
+              <li><a href="cookie-policy.html">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">&copy; 2026 Zheoa. Explore something new.</div>
+    </div>
+  </footer>
+
+</body>
+</html>
