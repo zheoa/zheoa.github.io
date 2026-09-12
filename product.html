@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — Zheoa</title>
+
+  <meta name="description" content="View product details and shop from Zheoa." id="meta-description" />
+  <meta property="og:title" content="Product — Zheoa" id="og-title" />
+  <meta property="og:description" content="View product details and shop from Zheoa." id="og-description" />
+  <meta property="og:image" content="" id="og-image" />
+  <meta property="og:type" content="product" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://*.supabase.co https://*.pexels.com https://*.googleapis.com https://*.gstatic.com https://api.ipify.org https://ipapi.co https://ip-api.com https://ipinfo.io; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.pexels.com https://images.pexels.com https://i.ibb.co; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://api.ipify.org https://ipapi.co https://ip-api.com https://ipinfo.io;" />
+
+  <style>
+    :root {
+      --yellow: #ffdb10; --yellow-dark: #e6c200; --yellow-darker: #b39b00;
+      --yellow-light: #fff8e1; --bg: #fdfdfc; --surface: #ffffff;
+      --text: #1a1a2e; --muted: #5a5a72; --border: #eaeaea;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      --radius: 16px; --max-width: 1240px; --nav-height: 68px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    main { flex: 1; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    /* HEADER */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--yellow);
+      height: var(--nav-height); display: flex; align-items: center;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--yellow-darker); letter-spacing: -0.02em;
+    }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 10px; background: var(--yellow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; box-shadow: 0 4px 12px rgba(255, 219, 16, 0.35);
+    }
+    .nav-links { display: flex; gap: 28px; font-weight: 600; font-size: 0.95rem; }
+    .nav-links a { padding: 4px 0; border-bottom: 3px solid transparent; transition: 0.2s; }
+    .nav-links a:hover, .nav-links a.active { border-bottom-color: var(--yellow); color: var(--yellow-darker); }
+    .menu-toggle { display: none; font-size: 1.6rem; background: none; border: none; cursor: pointer; padding: 4px 8px; }
+
+    /* BREADCRUMB */
+    .breadcrumb {
+      font-size: 0.9rem; color: var(--muted);
+      padding: 20px 0 12px;
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    }
+    .breadcrumb a { color: var(--yellow-darker); font-weight: 600; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* PRODUCT LAYOUT */
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+
+    /* GALLERY */
+    .gallery { display: flex; flex-direction: column; gap: 12px; }
+    .gallery-main {
+      aspect-ratio: 3 / 4;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    .gallery-main img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .gallery-main .no-img {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: #ccc; font-size: 3rem;
+    }
+    .gallery-thumbs {
+      display: flex; gap: 10px; overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .gallery-thumb {
+      width: 72px; height: 72px; flex-shrink: 0;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden; cursor: pointer;
+      transition: 0.15s;
+      background: #fafafa;
+    }
+    .gallery-thumb:hover, .gallery-thumb.active { border-color: var(--yellow); }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* PRODUCT INFO */
+    .product-info { display: flex; flex-direction: column; }
+    .product-brand-line {
+      font-size: 0.8rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-weight: 700; margin-bottom: 8px;
+    }
+    .product-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .product-rating-line {
+      color: #f5a623; font-size: 1rem;
+      margin-bottom: 16px;
+    }
+    .product-rating-line .rating-count {
+      color: var(--muted); font-size: 0.85rem; margin-left: 6px;
+    }
+    .product-description {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .attr-block {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      margin-bottom: 22px;
+    }
+    .attr-row {
+      display: flex;
+      gap: 14px;
+      font-size: 0.9rem;
+      padding: 6px 0;
+    }
+    .attr-row .attr-label {
+      color: var(--muted);
+      width: 90px;
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+    .attr-row .attr-value { color: var(--text); }
+
+    .shop-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .btn-shop {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: 0.2s;
+      border: 2px solid var(--yellow);
+      background: var(--yellow);
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-shop:hover {
+      background: var(--yellow-dark);
+      border-color: var(--yellow-dark);
+      transform: translateY(-2px);
+    }
+    .btn-shop.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: 0.2s;
+      border: 2px solid var(--border);
+      background: transparent;
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      border-color: var(--yellow);
+      background: var(--yellow-light);
+    }
+
+    .affiliate-note {
+      background: var(--yellow-light);
+      border-left: 4px solid var(--yellow);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .affiliate-note strong { color: var(--text); }
+
+    /* RELATED */
+    .section-header-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      flex-wrap: wrap; gap: 10px; margin: 40px 0 18px;
+    }
+    .section-title { font-size: 1.4rem; font-weight: 800; }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: 0.25s ease;
+      display: flex; flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
+    .product-card-image {
+      aspect-ratio: 3 / 4; background: #fafafa;
+      position: relative; overflow: hidden;
+    }
+    .product-card-image img { width: 100%; height: 100%; object-fit: cover; }
+    .product-card-body {
+      padding: 12px 14px 16px; flex: 1;
+      display: flex; flex-direction: column;
+    }
+    .product-brand {
+      font-size: 0.72rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      font-weight: 700; margin-bottom: 4px;
+    }
+    .product-name {
+      font-weight: 700; font-size: 0.92rem;
+      line-height: 1.3; margin-bottom: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .product-rating {
+      color: #f5a623; font-size: 0.78rem; margin-top: auto;
+    }
+    .product-rating .rating-count {
+      color: var(--muted); font-size: 0.72rem; margin-left: 4px;
+    }
+
+    .loading-spinner, .empty-state {
+      grid-column: 1 / -1;
+      text-align: center; padding: 40px 20px; color: var(--muted);
+    }
+
+    /* NOT FOUND */
+    .not-found {
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .not-found .icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .not-found h2 { font-size: 1.6rem; margin-bottom: 8px; }
+    .not-found p { color: var(--muted); margin-bottom: 20px; }
+    .not-found a {
+      display: inline-block;
+      padding: 12px 28px;
+      background: var(--yellow);
+      color: var(--text);
+      font-weight: 700;
+      border-radius: 30px;
+    }
+
+    /* COOKIE BANNER */
+    #cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 4px solid var(--yellow);
+      padding: 16px 24px; z-index: 2000;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    #cookie-banner.show { display: block; }
+    .cookie-banner-inner {
+      max-width: var(--max-width); margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
+    }
+    .cookie-banner-text { flex: 1; font-size: 0.9rem; color: var(--muted); min-width: 220px; }
+    .cookie-banner-text a { color: var(--yellow-darker); font-weight: 600; text-decoration: underline; }
+    .cookie-banner-buttons { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-banner-buttons button {
+      padding: 8px 22px; border: none; border-radius: 30px;
+      font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit;
+    }
+    .btn-accept { background: var(--yellow); color: var(--text); }
+    .btn-accept:hover { background: var(--yellow-dark); }
+    .btn-decline { background: transparent; color: var(--text); border: 2px solid var(--border); }
+    .btn-decline:hover { border-color: var(--yellow); background: var(--yellow-light); }
+    @media (max-width: 700px) {
+      .cookie-banner-inner { flex-direction: column; align-items: stretch; text-align: center; }
+      .cookie-banner-buttons { justify-content: center; }
+    }
+
+    /* FOOTER */
+    footer { background: #0d1c26; color: #b0c4d0; padding: 48px 0 28px; margin-top: 40px; }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+    .footer-brand .logo {
+      color: var(--yellow); font-size: 1.4rem; font-weight: 800;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .footer-brand p { max-width: 340px; margin-top: 10px; font-size: 0.9rem; }
+    .footer-links { display: flex; gap: 48px; flex-wrap: wrap; }
+    .footer-links h4 { color: #fff; margin-bottom: 8px; font-size: 0.95rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin: 5px 0; font-size: 0.9rem; }
+    .footer-links a { color: #b0c4d0; }
+    .footer-links a:hover { color: #fff; }
+    .copyright {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 32px; padding-top: 20px;
+      font-size: 0.8rem; text-align: center; color: #8ba0af;
+    }
+
+    @media (max-width: 900px) {
+      .product-layout { grid-template-columns: 1fr; gap: 24px; }
+    }
+    @media (max-width: 700px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none; flex-direction: column;
+        position: absolute; top: var(--nav-height);
+        left: 0; right: 0; background: white;
+        padding: 24px; border-bottom: 2px solid var(--yellow);
+        gap: 16px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      }
+      .nav-links.open { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">👗</span> Zheoa
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="women.html">Women</a>
+        <a href="men.html">Men</a>
+        <a href="kids.html">Kids</a>
+        <a href="combo.html">Combo Builder</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+      <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container" id="productContainer">
+      <div class="loading-spinner" style="padding:80px 20px;">Loading product…</div>
+    </div>
+  </main>
+
+  <div id="cookie-banner">
+    <div class="cookie-banner-inner">
+      <div class="cookie-banner-text">
+        🍪 We use localStorage to remember your preferences and improve your experience. By continuing, you agree to our
+        <a href="privacy.html">Privacy Policy</a> and <a href="cookie-policy.html">Cookie Policy</a>.
+      </div>
+      <div class="cookie-banner-buttons">
+        <button class="btn-decline" onclick="declineCookies()">Decline</button>
+        <button class="btn-accept" onclick="acceptCookies()">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo"><span class="logo-mark">👗</span> Zheoa</div>
+          <p>Outfit combos for every occasion, season, and mood.</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="women.html">Women</a></li>
+              <li><a href="men.html">Men</a></li>
+              <li><a href="kids.html">Kids</a></li>
+              <li><a href="combo.html">Combo Builder</a></li>
+              <li><a href="shop.html">Shop</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+              <li><a href="affiliate-disclosure.html">Affiliate</a></li>
+              <li><a href="cookie-policy.html">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">&copy; 2026 Zheoa. Explore something new.</div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const config = window.ZHEOA_CONFIG || {};
+    const supabaseClient = window.supabase.createClient(
+      config.SUPABASE_URL,
+      config.SUPABASE_ANON_KEY
+    );
+
+    const params = new URLSearchParams(window.location.search);
+    const SLUG = params.get('slug') || '';
+
+    let product = null;
+    let brand = null;
+    let category = null;
+    let allImages = [];
+    let allBrandsMap = {};
+
+    // ============================================================
+    // CONSENT
+    // ============================================================
+    function hasConsent() { return localStorage.getItem('cookiesAccepted') === 'true'; }
+    function acceptCookies() {
+      localStorage.setItem('cookiesAccepted', 'true');
+      document.getElementById('cookie-banner').classList.remove('show');
+      if (!localStorage.getItem('visitorId')) {
+        localStorage.setItem('visitorId', window.crypto?.randomUUID ? crypto.randomUUID() : 'v-' + Date.now());
+      }
+      loadImpactScript();
+    }
+    function declineCookies() {
+      localStorage.setItem('cookiesAccepted', 'false');
+      document.getElementById('cookie-banner').classList.remove('show');
+      ['visitorId', 'userCountry', 'userCountryTimestamp'].forEach(k => localStorage.removeItem(k));
+    }
+    function checkCookieConsent() {
+      const c = localStorage.getItem('cookiesAccepted');
+      if (c === null) document.getElementById('cookie-banner').classList.add('show');
+      else if (c === 'true') loadImpactScript();
+    }
+
+    // ============================================================
+    // IMPACT + CLICK TRACKING (minimal for this page)
+    // ============================================================
+    let impactLoaded = false;
+    function loadImpactScript() {
+      if (impactLoaded || !hasConsent()) return;
+      impactLoaded = true;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://utt.impactcdn.com/P-A5400232-c6f1-4649-879c-8f5a5bf1f9ea1.js';
+      s.onload = () => { if (window.impactStat) { try { impactStat('transformLinks'); impactStat('trackImpression'); } catch(e){} } };
+      document.head.appendChild(s);
+    }
+
+    function getVisitorId() {
+      if (!hasConsent()) return 'temp-' + Date.now();
+      let vid = localStorage.getItem('visitorId');
+      if (!vid) {
+        vid = window.crypto?.randomUUID ? crypto.randomUUID() : 'v-' + Date.now();
+        localStorage.setItem('visitorId', vid);
+      }
+      return vid;
+    }
+
+    async function getCountryCode() {
+      if (hasConsent()) {
+        const cached = localStorage.getItem('userCountry');
+        const ts = localStorage.getItem('userCountryTimestamp');
+        if (cached && ts && Date.now() - parseInt(ts) < 3600000) return cached;
+      }
+      const apis = [
+        { url: 'https://ipapi.co/json/', key: 'country_code' },
+        { url: 'https://ip-api.com/json/', key: 'countryCode' },
+        { url: 'https://ipinfo.io/json', key: 'country' }
+      ];
+      let country = 'default';
+      for (const api of apis) {
+        try {
+          const res = await fetch(api.url, { mode: 'cors' });
+          const data = await res.json();
+          const c = data[api.key];
+          if (c && typeof c === 'string' && c.length === 2) {
+            country = c.toUpperCase();
+            break;
+          }
+        } catch (_) {}
+      }
+      if (hasConsent()) {
+        localStorage.setItem('userCountry', country);
+        localStorage.setItem('userCountryTimestamp', String(Date.now()));
+      }
+      return country;
+    }
+
+    async function trackClick({ product_id, retailer_id, affiliate_key, link_url }) {
+      const country_code = await getCountryCode();
+      const visitor_id = getVisitorId();
+      let ip_address = null;
+      try {
+        const r = await fetch('https://api.ipify.org?format=json');
+        ip_address = (await r.json()).ip;
+      } catch (_) {}
+      try {
+        await supabaseClient.from('click_logs').insert({
+          product_id, retailer_id, affiliate_key, link_url,
+          country_code, visitor_id, ip_address,
+          user_agent: navigator.userAgent,
+          referrer: document.referrer || null,
+          event_type: 'click'
+        });
+      } catch (err) { console.warn('Click log failed:', err); }
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function toggleMobileMenu() { document.getElementById('navLinks').classList.toggle('open'); }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function updateMetaTags({ title, description, image }) {
+      if (title) document.title = title;
+      const md = document.getElementById('meta-description');
+      const ogT = document.getElementById('og-title');
+      const ogD = document.getElementById('og-description');
+      const ogI = document.getElementById('og-image');
+      if (md && description) md.content = description;
+      if (ogT && title) ogT.content = title;
+      if (ogD && description) ogD.content = description;
+      if (ogI && image) ogI.content = image;
+    }
+
+    // ============================================================
+    // LOAD PRODUCT
+    // ============================================================
+    async function loadProduct() {
+      const container = document.getElementById('productContainer');
+
+      if (!SLUG) { renderNotFound(); return; }
+
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('*')
+        .eq('slug', SLUG)
+        .is('deleted_at', null)
+        .eq('status', 'published')
+        .maybeSingle();
+
+      if (error || !data) { renderNotFound(); return; }
+      product = data;
+
+      // Increment view count
+      try {
+        await supabaseClient.rpc('increment_product_views', { product_id_param: product.id });
+      } catch (_) {}
+
+      // Fetch brand
+      if (product.brand_id) {
+        const { data: b } = await supabaseClient
+          .from('brands').select('id, name, slug, logo_url').eq('id', product.brand_id).maybeSingle();
+        brand = b;
+      }
+
+      // Fetch category
+      if (product.category_id) {
+        const { data: c } = await supabaseClient
+          .from('fashion_categories').select('id, name, slug, audience').eq('id', product.category_id).maybeSingle();
+        category = c;
+      }
+
+      // Fetch additional images
+      const { data: imgs } = await supabaseClient
+        .from('product_images')
+        .select('url, sort_order')
+        .eq('product_id', product.id)
+        .order('sort_order', { ascending: true });
+
+      allImages = [];
+      if (product.image_url) allImages.push(product.image_url);
+      (imgs || []).forEach(i => { if (i.url && !allImages.includes(i.url)) allImages.push(i.url); });
+
+      renderProduct();
+
+      // After render, resolve affiliate links
+      setTimeout(() => rewriteAffiliateLinks(), 100);
+
+      // Load related products
+      loadRelated();
+    }
+
+    function renderNotFound() {
+      document.getElementById('productContainer').innerHTML = `
+        <div class="not-found">
+          <span class="icon">🔍</span>
+          <h2>Product not found</h2>
+          <p>The product you're looking for doesn't exist or has been removed.</p>
+          <a href="shop.html">Browse the Shop</a>
+        </div>
+      `;
+    }
+
+    function renderProduct() {
+      const container = document.getElementById('productContainer');
+
+      // Breadcrumb
+      const audienceCap = product.audience.charAt(0).toUpperCase() + product.audience.slice(1);
+      let crumb = `<div class="breadcrumb"><a href="index.html">Home</a><span>/</span><a href="${product.audience}.html">${audienceCap}</a>`;
+      if (category) {
+        crumb += `<span>/</span><a href="category.html?audience=${encodeURIComponent(product.audience)}&slug=${encodeURIComponent(category.slug)}">${escapeHtml(category.name)}</a>`;
+      }
+      crumb += `<span>/</span><span>${escapeHtml(product.name)}</span></div>`;
+
+      // Gallery HTML
+      let galleryHtml = '';
+      if (allImages.length > 0) {
+        galleryHtml = `
+          <div class="gallery-main" id="galleryMain">
+            <img src="${escapeHtml(allImages[0])}" alt="${escapeHtml(product.name)}" id="mainImage" />
+          </div>
+          ${allImages.length > 1 ? `
+            <div class="gallery-thumbs" id="galleryThumbs">
+              ${allImages.map((url, i) => `
+                <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(${i}, this)">
+                  <img src="${escapeHtml(url)}" alt="View ${i+1}" onerror="this.style.opacity='0.3';" />
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        `;
+      } else {
+        galleryHtml = `<div class="gallery-main"><div class="no-img">—</div></div>`;
+      }
+
+      // Attributes
+      const attrs = [];
+      if (product.color)    attrs.push({ label: 'Color', value: product.color });
+      if (product.style)    attrs.push({ label: 'Style', value: product.style });
+      if (product.material) attrs.push({ label: 'Material', value: product.material });
+      if (product.season)   attrs.push({ label: 'Season', value: product.season });
+      if (product.occasion) attrs.push({ label: 'Occasion', value: product.occasion });
+
+      const attrsHtml = attrs.length > 0
+        ? `<div class="attr-block">
+            ${attrs.map(a => `<div class="attr-row"><div class="attr-label">${escapeHtml(a.label)}</div><div class="attr-value">${escapeHtml(a.value)}</div></div>`).join('')}
+          </div>`
+        : '';
+
+      const ratingHtml = product.rating != null
+        ? `<div class="product-rating-line">★ ${Number(product.rating).toFixed(1)} <span class="rating-count">(${product.rating_count || 0} ratings)</span></div>`
+        : '';
+
+      const brandLine = brand
+        ? `<a href="shop.html" class="product-brand-line">${escapeHtml(brand.name)}</a>`
+        : '';
+
+      container.innerHTML = `
+        ${crumb}
+        <div class="product-layout">
+          <div class="gallery">${galleryHtml}</div>
+          <div class="product-info">
+            ${brandLine}
+            <h1 class="product-title">${escapeHtml(product.name)}</h1>
+            ${ratingHtml}
+            <p class="product-description">${escapeHtml(product.description || 'No description available.')}</p>
+
+            ${attrsHtml}
+
+            <div class="shop-actions">
+              <a href="#" class="btn-shop disabled" id="shopBtn"
+                 data-product-id="${product.id}"
+                 onclick="handleShopClick(event)">
+                <span>🛍️</span> Shop this
+              </a>
+              <a href="combo.html?product=${product.id}" class="btn-secondary">
+                ✨ See combos with this
+              </a>
+            </div>
+
+            <div class="affiliate-note">
+              <strong>🛒 Affiliate Disclosure:</strong> This page contains affiliate links. We may earn a small commission at no extra cost to you when you purchase through our links.
+            </div>
+          </div>
+        </div>
+
+        <section>
+          <div class="section-header-row">
+            <h2 class="section-title">You might also like</h2>
+          </div>
+          <div class="product-grid" id="relatedGrid">
+            <div class="loading-spinner">Loading…</div>
+          </div>
+        </section>
+      `;
+
+      // Meta tags
+      updateMetaTags({
+        title: `${product.name} — Zheoa`,
+        description: product.description || `Shop ${product.name} on Zheoa.`,
+        image: product.image_url
+      });
+    }
+
+    function switchImage(idx, thumbEl) {
+      const main = document.getElementById('mainImage');
+      if (main && allImages[idx]) main.src = allImages[idx];
+      document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+      if (thumbEl) thumbEl.classList.add('active');
+    }
+
+    // ============================================================
+    // AFFILIATE LINK RESOLUTION
+    // ============================================================
+    async function rewriteAffiliateLinks() {
+      const btn = document.getElementById('shopBtn');
+      if (!btn || !product) return;
+
+      const country = await getCountryCode();
+
+      const { data, error } = await supabaseClient
+        .from('product_affiliate_links')
+        .select('retailer_id, country_code, affiliate_key, link_url, priority, is_active')
+        .eq('product_id', product.id)
+        .eq('is_active', true)
+        .order('priority', { ascending: false });
+
+      if (error || !data || data.length === 0) return;
+
+      // Prefer country-specific, then default, then any
+      let pick = data.find(l => l.country_code === country);
+      if (!pick) pick = data.find(l => l.country_code === 'default');
+      if (!pick) pick = data[0];
+
+      if (pick) {
+        btn.href = pick.link_url;
+        btn.dataset.retailerId = pick.retailer_id;
+        btn.dataset.affiliateKey = pick.affiliate_key;
+        btn.classList.remove('disabled');
+      }
+    }
+
+    async function handleShopClick(e) {
+      e.preventDefault();
+      const btn = e.currentTarget;
+      if (btn.classList.contains('disabled')) return;
+      const href = btn.href;
+      if (!href || href === '#') return;
+
+      // Fire tracking (don't await — open immediately)
+      trackClick({
+        product_id: product.id,
+        retailer_id: btn.dataset.retailerId || null,
+        affiliate_key: btn.dataset.affiliateKey || null,
+        link_url: href
+      });
+
+      window.open(href, '_blank', 'noopener');
+    }
+
+    // ============================================================
+    // RELATED PRODUCTS
+    // ============================================================
+    async function loadRelated() {
+      const grid = document.getElementById('relatedGrid');
+      if (!grid || !product) return;
+
+      let query = supabaseClient
+        .from('products')
+        .select('id, name, slug, image_url, brand_id, rating, rating_count, is_recommended')
+        .eq('status', 'published')
+        .eq('audience', product.audience)
+        .is('deleted_at', null)
+        .neq('id', product.id)
+        .limit(8);
+
+      if (product.category_id) {
+        query = query.eq('category_id', product.category_id);
+      }
+
+      const { data, error } = await query;
+      if (error || !data || data.length === 0) {
+        // Fallback: any products from same audience
+        const { data: fallback } = await supabaseClient
+          .from('products')
+          .select('id, name, slug, image_url, brand_id, rating, rating_count, is_recommended')
+          .eq('status', 'published')
+          .eq('audience', product.audience)
+          .is('deleted_at', null)
+          .neq('id', product.id)
+          .limit(8);
+
+        if (!fallback || fallback.length === 0) {
+          grid.innerHTML = `<div class="empty-state">No related products yet.</div>`;
+          return;
+        }
+        renderRelated(grid, fallback);
+        return;
+      }
+      renderRelated(grid, data);
+    }
+
+    function renderRelated(grid, items) {
+      // Need brand map
+      Promise.all([supabaseClient.from('brands').select('id, name')]).then(([{ data: brands }]) => {
+        const map = {};
+        (brands || []).forEach(b => { map[b.id] = b; });
+
+        grid.innerHTML = items.map(p => {
+          const brandName = p.brand_id && map[p.brand_id] ? map[p.brand_id].name : '';
+          const img = p.image_url
+            ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none';" />`
+            : '';
+          const rec = p.is_recommended ? '<div class="product-recommended-badge" style="position:absolute;top:10px;right:10px;background:var(--yellow);color:var(--text);font-size:0.65rem;font-weight:800;padding:4px 10px;border-radius:20px;">⭐ PICK</div>' : '';
+          const rating = p.rating != null
+            ? `<div class="product-rating">★ ${Number(p.rating).toFixed(1)} <span class="rating-count">(${p.rating_count || 0})</span></div>`
+            : '';
+          return `
+            <a href="product.html?slug=${encodeURIComponent(p.slug)}" class="product-card">
+              <div class="product-card-image">${rec}${img}</div>
+              <div class="product-card-body">
+                ${brandName ? `<div class="product-brand">${escapeHtml(brandName)}</div>` : ''}
+                <div class="product-name">${escapeHtml(p.name)}</div>
+                ${rating}
+              </div>
+            </a>`;
+        }).join('');
+      });
+    }
+
+    // ============================================================
+    // BOOT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      checkCookieConsent();
+      loadProduct();
+    });
+  </script>
+
+</body>
+</html>
