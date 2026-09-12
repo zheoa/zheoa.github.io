@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Combo Builder — Zheoa</title>
+
+  <meta name="description" content="Build your perfect outfit combo. Pick a context and get top, bottom, footwear and accessories matched for you." id="meta-description" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://*.supabase.co https://*.pexels.com https://*.googleapis.com https://*.gstatic.com https://api.ipify.org https://ipapi.co https://ip-api.com https://ipinfo.io https://www.pinterest.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.pexels.com https://images.pexels.com https://i.ibb.co; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://api.ipify.org https://ipapi.co https://ip-api.com https://ipinfo.io;" />
+
+  <style>
+    :root {
+      --yellow: #ffdb10; --yellow-dark: #e6c200; --yellow-darker: #b39b00;
+      --yellow-light: #fff8e1; --bg: #fdfdfc; --surface: #ffffff;
+      --text: #1a1a2e; --muted: #5a5a72; --border: #eaeaea;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      --radius: 16px; --max-width: 1240px; --nav-height: 68px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    main { flex: 1; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    /* HEADER */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--yellow);
+      height: var(--nav-height); display: flex; align-items: center;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--yellow-darker); letter-spacing: -0.02em;
+    }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 10px; background: var(--yellow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; box-shadow: 0 4px 12px rgba(255, 219, 16, 0.35);
+    }
+    .nav-links { display: flex; gap: 28px; font-weight: 600; font-size: 0.95rem; }
+    .nav-links a { padding: 4px 0; border-bottom: 3px solid transparent; transition: 0.2s; }
+    .nav-links a:hover, .nav-links a.active { border-bottom-color: var(--yellow); color: var(--yellow-darker); }
+    .menu-toggle { display: none; font-size: 1.6rem; background: none; border: none; cursor: pointer; padding: 4px 8px; }
+
+    /* HERO */
+    .combo-hero {
+      text-align: center;
+      padding: 34px 0 20px;
+    }
+    .combo-hero h1 {
+      font-size: clamp(1.9rem, 4.2vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .combo-hero h1 span {
+      background: var(--yellow-light);
+      color: var(--yellow-darker);
+      padding: 0 14px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .combo-hero p {
+      color: var(--muted);
+      font-size: 1.02rem;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .product-prefix-banner {
+      background: var(--yellow-light);
+      border: 1px solid var(--yellow);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      color: var(--text);
+      margin: 14px auto 0;
+      max-width: 720px;
+      display: none;
+    }
+    .product-prefix-banner.show { display: block; }
+
+    /* AUDIENCE TABS */
+    .audience-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 22px 0 20px;
+      flex-wrap: wrap;
+    }
+    .audience-tab {
+      padding: 10px 26px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .audience-tab:hover { border-color: var(--yellow); color: var(--text); }
+    .audience-tab.active {
+      background: var(--yellow); border-color: var(--yellow); color: var(--text);
+    }
+
+    /* CONTEXT PICKER */
+    .context-picker {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .context-type-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      overflow-x: auto;
+    }
+    .context-type-tab {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .context-type-tab:hover { background: var(--yellow-light); color: var(--text); }
+    .context-type-tab.active { background: var(--yellow); color: var(--text); }
+
+    .context-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .context-chip {
+      padding: 8px 16px;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .context-chip:hover { border-color: var(--yellow); }
+    .context-chip.active {
+      background: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    /* COMBO AREA */
+    .combo-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .combo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .combo-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: 0.25s;
+    }
+    .combo-card.locked {
+      border-color: var(--yellow);
+      border-width: 2px;
+    }
+    .combo-card.switchable { border-color: #e0e0e0; }
+    .combo-card.switchable:hover { border-color: var(--yellow); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-slot-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--yellow-darker);
+      background: var(--yellow-light);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .card-lock-badge {
+      font-size: 0.68rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-image-wrap {
+      aspect-ratio: 3 / 4;
+      background: #fafafa;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-image-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s;
+    }
+    .card-image-wrap:hover img { transform: scale(1.04); }
+    .card-image-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: #ccc; font-size: 2.2rem;
+    }
+
+    .card-body {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-product-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-product-brand {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .card-option-select {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+      width: 100%;
+    }
+    .card-option-select:focus {
+      outline: none; border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(255, 219, 16, 0.2);
+    }
+
+    .card-shop-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      background: var(--yellow);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 22px;
+      transition: 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+    }
+    .card-shop-btn:hover { background: var(--yellow-dark); }
+    .card-shop-btn.disabled {
+      opacity: 0.5; cursor: not-allowed;
+      background: #eee; color: var(--muted);
+    }
+
+    .card-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 3 / 4;
+      background: repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f4f4f4 10px, #f4f4f4 20px);
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 20px;
+    }
+    .card-empty .card-empty-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    /* ACTION ROW */
+    .combo-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .combo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 2px solid transparent;
+    }
+    .combo-btn-primary {
+      background: var(--yellow);
+      color: var(--text);
+      border-color: var(--yellow);
+    }
+    .combo-btn-primary:hover {
+      background: var(--yellow-dark);
+      border-color: var(--yellow-dark);
+      transform: translateY(-2px);
+    }
+    .combo-btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .combo-btn-secondary:hover {
+      border-color: var(--yellow);
+      background: var(--yellow-light);
+    }
+    .combo-btn:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+
+    /* CONTEXT DESCRIPTION */
+    .context-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 640px;
+      margin: 20px auto 0;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .context-note strong { color: var(--text); }
+
+    /* LOADING / EMPTY */
+    .combo-loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+    .combo-empty {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .combo-empty strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    /* COOKIE BANNER */
+    #cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface); border-top: 4px solid var(--yellow);
+      padding: 16px 24px; z-index: 2000;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    #cookie-banner.show { display: block; }
+    .cookie-banner-inner {
+      max-width: var(--max-width); margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
+    }
+    .cookie-banner-text { flex: 1; font-size: 0.9rem; color: var(--muted); min-width: 220px; }
+    .cookie-banner-text a { color: var(--yellow-darker); font-weight: 600; text-decoration: underline; }
+    .cookie-banner-buttons { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-banner-buttons button {
+      padding: 8px 22px; border: none; border-radius: 30px;
+      font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit;
+    }
+    .btn-accept { background: var(--yellow); color: var(--text); }
+    .btn-accept:hover { background: var(--yellow-dark); }
+    .btn-decline { background: transparent; color: var(--text); border: 2px solid var(--border); }
+    .btn-decline:hover { border-color: var(--yellow); background: var(--yellow-light); }
+
+    /* FOOTER */
+    footer { background: #0d1c26; color: #b0c4d0; padding: 48px 0 28px; margin-top: 40px; }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+    .footer-brand .logo {
+      color: var(--yellow); font-size: 1.4rem; font-weight: 800;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .footer-brand p { max-width: 340px; margin-top: 10px; font-size: 0.9rem; }
+    .footer-links { display: flex; gap: 48px; flex-wrap: wrap; }
+    .footer-links h4 { color: #fff; margin-bottom: 8px; font-size: 0.95rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin: 5px 0; font-size: 0.9rem; }
+    .footer-links a { color: #b0c4d0; }
+    .footer-links a:hover { color: #fff; }
+    .copyright {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 32px; padding-top: 20px;
+      font-size: 0.8rem; text-align: center; color: #8ba0af;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none; flex-direction: column;
+        position: absolute; top: var(--nav-height);
+        left: 0; right: 0; background: white;
+        padding: 24px; border-bottom: 2px solid var(--yellow);
+        gap: 16px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      }
+      .nav-links.open { display: flex; }
+      .combo-grid { gap: 10px; }
+      .combo-hero h1 { font-size: 1.6rem; }
+    }
+    @media (max-width: 420px) {
+      .combo-grid { gap: 8px; }
+      .card-header { padding: 8px 10px; }
+      .card-body { padding: 10px 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">👗</span> Zheoa
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="women.html">Women</a>
+        <a href="men.html">Men</a>
+        <a href="kids.html">Kids</a>
+        <a href="combo.html" class="active">Combo Builder</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+      <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container">
+
+      <section class="combo-hero">
+        <h1>Build your <span>outfit combo</span>.</h1>
+        <p>Pick a context and we'll match a top, bottom, footwear and accessory for you.</p>
+        <div class="product-prefix-banner" id="productPrefixBanner"></div>
+      </section>
+
+      <!-- AUDIENCE TABS -->
+      <div class="audience-tabs" id="audienceTabs">
+        <button class="audience-tab active" data-audience="women">👗 Women</button>
+        <button class="audience-tab" data-audience="men">👔 Men</button>
+        <button class="audience-tab" data-audience="kids">🧒 Kids</button>
+      </div>
+
+      <!-- CONTEXT PICKER -->
+      <div class="context-picker">
+        <div class="context-type-tabs" id="contextTypeTabs">
+          <button class="context-type-tab active" data-type="occasion">🎉 Occasion</button>
+          <button class="context-type-tab" data-type="time">🌅 Time</button>
+          <button class="context-type-tab" data-type="activity">🏃 Activity</button>
+          <button class="context-type-tab" data-type="season">🌤️ Season</button>
+        </div>
+        <div class="context-chips" id="contextChips">
+          <div class="combo-loading">Loading contexts…</div>
+        </div>
+      </div>
+
+      <!-- COMBO GRID -->
+      <div class="combo-area">
+        <div class="combo-grid" id="comboGrid">
+          <div class="combo-loading" style="grid-column: 1 / -1;">Pick a context to see your combo.</div>
+        </div>
+
+        <div class="combo-actions">
+          <button class="combo-btn combo-btn-primary" id="shuffleBtn" onclick="shuffleCombo()">
+            🔄 Shuffle
+          </button>
+          <button class="combo-btn combo-btn-secondary" id="pinBtn" onclick="saveToPinterest()">
+            📌 Save to Pinterest
+          </button>
+          <button class="combo-btn combo-btn-secondary" onclick="copyComboLink()">
+            🔗 Copy Link
+          </button>
+        </div>
+
+        <div class="context-note" id="contextNote"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="cookie-banner">
+    <div class="cookie-banner-inner">
+      <div class="cookie-banner-text">
+        🍪 We use localStorage to remember your preferences and improve your experience. By continuing, you agree to our
+        <a href="privacy.html">Privacy Policy</a> and <a href="cookie-policy.html">Cookie Policy</a>.
+      </div>
+      <div class="cookie-banner-buttons">
+        <button class="btn-decline" onclick="declineCookies()">Decline</button>
+        <button class="btn-accept" onclick="acceptCookies()">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo"><span class="logo-mark">👗</span> Zheoa</div>
+          <p>Outfit combos for every occasion, season, and mood.</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="women.html">Women</a></li>
+              <li><a href="men.html">Men</a></li>
+              <li><a href="kids.html">Kids</a></li>
+              <li><a href="combo.html">Combo Builder</a></li>
+              <li><a href="shop.html">Shop</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+              <li><a href="affiliate-disclosure.html">Affiliate</a></li>
+              <li><a href="cookie-policy.html">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">&copy; 2026 Zheoa. Explore something new.</div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ============================================================
+    // SUPABASE INIT
+    // ============================================================
+    const config = window.ZHEOA_CONFIG || {};
+    const supabaseClient = window.supabase.createClient(
+      config.SUPABASE_URL,
+      config.SUPABASE_ANON_KEY
+    );
+
+    // ============================================================
+    // URL PARAMS
+    // ============================================================
+    const params = new URLSearchParams(window.location.search);
+    const URL_AUDIENCE = params.get('audience') || '';
+    const URL_CONTEXT  = params.get('context')  || '';
+    const URL_PRODUCT  = params.get('product')  || '';
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let currentAudience = URL_AUDIENCE || 'women';
+    let currentContextType = 'occasion';
+    let currentContextKey = URL_CONTEXT || '';
+    let allContexts = [];
+    let slots = {};          // slot_key -> slot row
+    let slotOptions = {};    // slot_key -> [{option_key, display_name}]
+    let slotOptionCategories = {}; // slot_key -> { option_key -> [category_ids] }
+
+    // Current combo: 4 slots
+    // Each entry: { slotKey, optionKey, product|null, kind: 'top'|'bottom'|'switchable' }
+    let currentCombo = {
+      top:       { slotKey: 'top',       optionKey: 'top',       product: null, kind: 'locked' },
+      bottom:    { slotKey: 'bottom',    optionKey: 'bottom',    product: null, kind: 'locked' },
+      slot3:     { slotKey: 'footwear',  optionKey: 'footwear',  product: null, kind: 'switchable' },
+      slot4:     { slotKey: 'accessory', optionKey: 'accessory', product: null, kind: 'switchable' }
+    };
+
+    let brandMap = {};
+
+    // ============================================================
+    // CONSENT
+    // ============================================================
+    function hasConsent() { return localStorage.getItem('cookiesAccepted') === 'true'; }
+    function acceptCookies() {
+      localStorage.setItem('cookiesAccepted', 'true');
+      document.getElementById('cookie-banner').classList.remove('show');
+      if (!localStorage.getItem('visitorId')) {
+        localStorage.setItem('visitorId', window.crypto?.randomUUID ? crypto.randomUUID() : 'v-' + Date.now());
+      }
+    }
+    function declineCookies() {
+      localStorage.setItem('cookiesAccepted', 'false');
+      document.getElementById('cookie-banner').classList.remove('show');
+      ['visitorId', 'userCountry', 'userCountryTimestamp'].forEach(k => localStorage.removeItem(k));
+    }
+    function checkCookieConsent() {
+      const c = localStorage.getItem('cookiesAccepted');
+      if (c === null) document.getElementById('cookie-banner').classList.add('show');
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function toggleMobileMenu() { document.getElementById('navLinks').classList.toggle('open'); }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function pickRandom(arr) {
+      if (!arr || arr.length === 0) return null;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+    function getVisitorId() {
+      if (!hasConsent()) return 'temp-' + Date.now();
+      let vid = localStorage.getItem('visitorId');
+      if (!vid) {
+        vid = window.crypto?.randomUUID ? crypto.randomUUID() : 'v-' + Date.now();
+        localStorage.setItem('visitorId', vid);
+      }
+      return vid;
+    }
+    async function getCountryCode() {
+      if (hasConsent()) {
+        const cached = localStorage.getItem('userCountry');
+        const ts = localStorage.getItem('userCountryTimestamp');
+        if (cached && ts && Date.now() - parseInt(ts) < 3600000) return cached;
+      }
+      const apis = [
+        { url: 'https://ipapi.co/json/', key: 'country_code' },
+        { url: 'https://ip-api.com/json/', key: 'countryCode' },
+        { url: 'https://ipinfo.io/json', key: 'country' }
+      ];
+      let country = 'default';
+      for (const api of apis) {
+        try {
+          const res = await fetch(api.url, { mode: 'cors' });
+          const data = await res.json();
+          const c = data[api.key];
+          if (c && typeof c === 'string' && c.length === 2) { country = c.toUpperCase(); break; }
+        } catch (_) {}
+      }
+      if (hasConsent()) {
+        localStorage.setItem('userCountry', country);
+        localStorage.setItem('userCountryTimestamp', String(Date.now()));
+      }
+      return country;
+    }
+    async function trackClick({ product_id, retailer_id, affiliate_key, link_url }) {
+      const country_code = await getCountryCode();
+      const visitor_id = getVisitorId();
+      let ip_address = null;
+      try {
+        const r = await fetch('https://api.ipify.org?format=json');
+        ip_address = (await r.json()).ip;
+      } catch (_) {}
+      try {
+        await supabaseClient.from('click_logs').insert({
+          product_id, retailer_id, affiliate_key, link_url,
+          country_code, visitor_id, ip_address,
+          user_agent: navigator.userAgent,
+          referrer: document.referrer || null,
+          event_type: 'combo_click'
+        });
+      } catch (err) { console.warn('Click log failed:', err); }
+    }
+
+    // ============================================================
+    // LOAD SLOTS + OPTIONS + CATEGORY MAPPINGS
+    // ============================================================
+    async function loadSlotsAndOptions() {
+      const { data: slotRows } = await supabaseClient
+        .from('combo_slots')
+        .select('id, slot_key, display_name, is_locked, sort_order')
+        .order('sort_order', { ascending: true });
+
+      (slotRows || []).forEach(s => { slots[s.slot_key] = s; });
+
+      // Slot options
+      const slotIds = (slotRows || []).map(s => s.id);
+      const { data: optRows } = await supabaseClient
+        .from('combo_slot_options')
+        .select('slot_id, option_key, display_name, is_default, sort_order')
+        .in('slot_id', slotIds)
+        .order('sort_order', { ascending: true });
+
+      // Reverse map slot_id -> slot_key
+      const idToKey = {};
+      (slotRows || []).forEach(s => { idToKey[s.id] = s.slot_key; });
+
+      slotOptions = {};
+      (optRows || []).forEach(o => {
+        const key = idToKey[o.slot_id];
+        if (!key) return;
+        if (!slotOptions[key]) slotOptions[key] = [];
+        slotOptions[key].push(o);
+      });
+
+      // Slot-category mappings
+      const { data: mapRows } = await supabaseClient
+        .from('combo_slot_categories')
+        .select('slot_id, option_key, category_id')
+        .in('slot_id', slotIds);
+
+      slotOptionCategories = {};
+      (mapRows || []).forEach(m => {
+        const key = idToKey[m.slot_id];
+        if (!key) return;
+        if (!slotOptionCategories[key]) slotOptionCategories[key] = {};
+        if (!slotOptionCategories[key][m.option_key]) slotOptionCategories[key][m.option_key] = [];
+        slotOptionCategories[key][m.option_key].push(m.category_id);
+      });
+    }
+
+    // ============================================================
+    // LOAD CONTEXTS
+    // ============================================================
+    async function loadContexts() {
+      const { data, error } = await supabaseClient
+        .from('combo_contexts')
+        .select('id, context_type, context_key, display_name, description, icon, sort_order')
+        .eq('is_active', true)
+        .in('context_type', ['occasion', 'time', 'activity', 'season'])
+        .order('context_type', { ascending: true })
+        .order('sort_order', { ascending: true });
+
+      if (error || !data) {
+        document.getElementById('contextChips').innerHTML = `<div class="combo-loading">Could not load contexts.</div>`;
+        return;
+      }
+      allContexts = data;
+
+      renderContextChips();
+    }
+
+    function renderContextChips() {
+      const chips = document.getElementById('contextChips');
+      const typeContexts = allContexts.filter(c => c.context_type === currentContextType);
+
+      if (typeContexts.length === 0) {
+        chips.innerHTML = `<div class="combo-loading">No ${currentContextType} options.</div>`;
+        return;
+      }
+
+      // Ensure we have a current context selected for this type
+      const keys = typeContexts.map(c => c.context_key);
+      if (!currentContextKey || !keys.includes(currentContextKey)) {
+        currentContextKey = typeContexts[0].context_key;
+      }
+
+      chips.innerHTML = typeContexts.map(c => `
+        <button class="context-chip ${c.context_key === currentContextKey ? 'active' : ''}"
+                data-context="${escapeHtml(c.context_key)}">
+          ${c.icon ? escapeHtml(c.icon) + ' ' : ''}${escapeHtml(c.display_name)}
+        </button>
+      `).join('');
+
+      // Wire up clicks
+      chips.querySelectorAll('.context-chip').forEach(btn => {
+        btn.onclick = () => {
+          currentContextKey = btn.dataset.context;
+          renderContextChips();
+          loadNewCombo();
+        };
+      });
+
+      // Context note
+      const activeCtx = typeContexts.find(c => c.context_key === currentContextKey);
+      if (activeCtx) {
+        document.getElementById('contextNote').innerHTML =
+          `<strong>${escapeHtml(activeCtx.display_name)}</strong> — ${escapeHtml(activeCtx.description || 'A styled combo for this context.')}`;
+      }
+    }
+
+    // ============================================================
+    // LOAD BRANDS (for display)
+    // ============================================================
+    async function loadBrands() {
+      const { data } = await supabaseClient.from('brands').select('id, name');
+      (data || []).forEach(b => { brandMap[b.id] = b; });
+    }
+
+    // ============================================================
+    // GENERATE COMBO
+    // ============================================================
+    async function loadNewCombo() {
+      const grid = document.getElementById('comboGrid');
+      grid.innerHTML = `<div class="combo-loading" style="grid-column:1/-1;">Building your combo…</div>`;
+
+      // Reset state
+      currentCombo.top.product = null;
+      currentCombo.bottom.product = null;
+      currentCombo.slot3 = { slotKey: 'footwear', optionKey: 'footwear', product: null, kind: 'switchable' };
+      currentCombo.slot4 = { slotKey: 'accessory', optionKey: 'accessory', product: null, kind: 'switchable' };
+
+      // Try curated combos first
+      const curated = await tryCuratedCombo();
+      if (curated) {
+        renderGrid();
+        return;
+      }
+
+      // Fall back to generate_combos RPC
+      try {
+        const { data, error } = await supabaseClient
+          .rpc('generate_combos', {
+            context_key_param: currentContextKey,
+            audience_param: currentAudience,
+            limit_count_param: 1
+          });
+
+        if (error) throw error;
+
+        if (!data || (Array.isArray(data) && data.length === 0) || data.error) {
+          // Fallback: pick random products manually
+          await fallbackRandomCombo();
+        } else {
+          const combo = Array.isArray(data) ? data[0] : data;
+          currentCombo.top.product = combo.top || null;
+          currentCombo.bottom.product = combo.bottom || null;
+          currentCombo.slot3.product = combo.footwear || null;
+          currentCombo.slot4.product = combo.accessory || null;
+
+          // If any slot is empty, try a fallback for that slot
+          await fillEmptySlots();
+        }
+      } catch (err) {
+        console.warn('generate_combos failed, using fallback:', err);
+        await fallbackRandomCombo();
+      }
+
+      renderGrid();
+    }
+
+    async function tryCuratedCombo() {
+      // Fetch curated combos for this context + audience
+      const { data: ctxRow } = await supabaseClient
+        .from('combo_contexts')
+        .select('id')
+        .eq('context_key', currentContextKey)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (!ctxRow) return false;
+
+      const { data: combos, error } = await supabaseClient
+        .from('curated_combos')
+        .select('id, slot_1_product_id, slot_2_product_id, slot_3_product_id, slot_4_product_id, slot_3_option_key, slot_4_option_key, notes')
+        .eq('context_id', ctxRow.id)
+        .eq('audience', currentAudience)
+        .order('is_featured', { ascending: false });
+
+      if (error || !combos || combos.length === 0) return false;
+
+      // Pick a random curated combo
+      const combo = pickRandom(combos);
+
+      // Fetch products
+      const pids = [combo.slot_1_product_id, combo.slot_2_product_id, combo.slot_3_product_id, combo.slot_4_product_id].filter(Boolean);
+      const productMap = {};
+      if (pids.length > 0) {
+        const { data: prods } = await supabaseClient
+          .from('products')
+          .select('id, name, slug, image_url, brand_id, color, style')
+          .in('id', pids);
+        (prods || []).forEach(p => { productMap[p.id] = p; });
+      }
+
+      currentCombo.top.product = productMap[combo.slot_1_product_id] || null;
+      currentCombo.bottom.product = productMap[combo.slot_2_product_id] || null;
+
+      currentCombo.slot3 = {
+        slotKey: 'footwear',
+        optionKey: combo.slot_3_option_key || 'footwear',
+        product: productMap[combo.slot_3_product_id] || null,
+        kind: 'switchable'
+      };
+      currentCombo.slot4 = {
+        slotKey: 'accessory',
+        optionKey: combo.slot_4_option_key || 'accessory',
+        product: productMap[combo.slot_4_product_id] || null,
+        kind: 'switchable'
+      };
+
+      return true;
+    }
+
+    async function fallbackRandomCombo() {
+      // Pick random products directly from DB for each required slot
+      const requiredCategories = {
+        top:    slotOptionCategories['top']?.['top']    || [],
+        bottom: slotOptionCategories['bottom']?.['bottom'] || []
+      };
+
+      const productCache = {};
+
+      async function pickProductForCategories(categoryIds) {
+        if (!categoryIds || categoryIds.length === 0) return null;
+        const { data } = await supabaseClient
+          .from('products')
+          .select('id, name, slug, image_url, brand_id, color, style')
+          .in('category_id', categoryIds)
+          .eq('audience', currentAudience)
+          .eq('status', 'published')
+          .is('deleted_at', null)
+          .limit(30);
+        if (!data || data.length === 0) return null;
+        return pickRandom(data);
+      }
+
+      currentCombo.top.product    = await pickProductForCategories(requiredCategories.top);
+      currentCombo.bottom.product = await pickProductForCategories(requiredCategories.bottom);
+
+      // Slot 3: default footwear
+      const slot3Cats = slotOptionCategories['footwear']?.['footwear'] || [];
+      currentCombo.slot3.product = await pickProductForCategories(slot3Cats);
+
+      // Slot 4: default accessory
+      const slot4Cats = slotOptionCategories['accessory']?.['accessory'] || [];
+      currentCombo.slot4.product = await pickProductForCategories(slot4Cats);
+    }
+
+    async function fillEmptySlots() {
+      // Fill any null product from the fallback logic
+      const slotConfigs = [
+        { combo: currentCombo.top,    slotKey: 'top',       optionKey: 'top' },
+        { combo: currentCombo.bottom, slotKey: 'bottom',    optionKey: 'bottom' },
+        { combo: currentCombo.slot3,  slotKey: 'footwear',  optionKey: 'footwear' },
+        { combo: currentCombo.slot4,  slotKey: 'accessory', optionKey: 'accessory' }
+      ];
+
+      for (const cfg of slotConfigs) {
+        if (cfg.combo.product) continue;
+        const cats = slotOptionCategories[cfg.slotKey]?.[cfg.optionKey] || [];
+        if (cats.length === 0) continue;
+
+        const { data } = await supabaseClient
+          .from('products')
+          .select('id, name, slug, image_url, brand_id, color, style')
+          .in('category_id', cats)
+          .eq('audience', currentAudience)
+          .eq('status', 'published')
+          .is('deleted_at', null)
+          .limit(20);
+
+        if (data && data.length > 0) {
+          cfg.combo.product = pickRandom(data);
+        }
+      }
+    }
+
+    // ============================================================
+    // RENDER GRID
+    // ============================================================
+    function renderGrid() {
+      const grid = document.getElementById('comboGrid');
+
+      const cardsHtml = [
+        renderCard('top',    1),
+        renderCard('bottom', 2),
+        renderCard('slot3',  3),
+        renderCard('slot4',  4)
+      ].join('');
+
+      grid.innerHTML = cardsHtml;
+
+      // Wire up option selects for switchable cards
+      grid.querySelectorAll('select[data-slot]').forEach(sel => {
+        sel.onchange = (e) => onSlotOptionChange(e.target.dataset.slot, e.target.value);
+      });
+
+      // Wire up shop buttons
+      grid.querySelectorAll('.card-shop-btn').forEach(btn => {
+        btn.onclick = (e) => onShopClick(e, btn);
+      });
+
+      // Resolve affiliate links for all product cards
+      resolveAffiliateLinks();
+    }
+
+    function renderCard(comboKey, slotIndex) {
+      const c = currentCombo[comboKey];
+      if (!c) return '';
+
+      const isLocked = (comboKey === 'top' || comboKey === 'bottom');
+      const isSwitchable = !isLocked;
+      const label = slotLabelFor(comboKey, c);
+      const lockBadge = isLocked ? '<span class="card-lock-badge">🔒 Locked</span>' : '';
+
+      // Card empty state (user turned it off)
+      if (isSwitchable && c.optionKey === '__off__') {
+        return `
+          <div class="combo-card switchable">
+            <div class="card-header">
+              <span class="card-slot-label">${escapeHtml(label)}</span>
+            </div>
+            <div class="card-empty">
+              <div class="card-empty-icon">➕</div>
+              <div>Slot turned off</div>
+              <select class="card-option-select" data-slot="${comboKey}" style="margin-top:12px;">
+                ${renderOptionSelect(c)}
+              </select>
+            </div>
+          </div>
+        `;
+      }
+
+      const product = c.product;
+      const img = product && product.image_url
+        ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'card-image-placeholder',textContent:'—'}))" />`
+        : `<div class="card-image-placeholder">—</div>`;
+
+      const brandName = product && product.brand_id && brandMap[product.brand_id]
+        ? brandMap[product.brand_id].name : '';
+
+      const productName = product
+        ? `<a href="product.html?slug=${encodeURIComponent(product.slug)}" class="card-product-name">${escapeHtml(product.name)}</a>`
+        : `<div class="card-product-name" style="color:var(--muted);">No product found</div>`;
+
+      const optionSelectHtml = isSwitchable
+        ? `<select class="card-option-select" data-slot="${comboKey}">
+             ${renderOptionSelect(c)}
+           </select>`
+        : '';
+
+      const shopBtnHtml = product
+        ? `<button class="card-shop-btn disabled"
+                   data-product-id="${product.id}"
+                   data-slot-key="${comboKey}">
+             🛍️ Shop this
+           </button>`
+        : '';
+
+      return `
+        <div class="combo-card ${isLocked ? 'locked' : 'switchable'}">
+          <div class="card-header">
+            <span class="card-slot-label">${escapeHtml(label)}</span>
+            ${lockBadge}
+          </div>
+          <div class="card-image-wrap">${img}</div>
+          <div class="card-body">
+            ${brandName ? `<div class="card-product-brand">${escapeHtml(brandName)}</div>` : ''}
+            ${productName}
+            ${optionSelectHtml}
+            ${shopBtnHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function slotLabelFor(comboKey, c) {
+      if (comboKey === 'top')    return 'Top';
+      if (comboKey === 'bottom') return 'Bottom';
+      if (comboKey === 'slot3')  return prettyOptionKey(c.optionKey);
+      if (comboKey === 'slot4')  return prettyOptionKey(c.optionKey);
+      return 'Slot';
+    }
+
+    function prettyOptionKey(key) {
+      if (!key || key === '__off__') return 'Off';
+      return key.charAt(0).toUpperCase() + key.slice(1);
+    }
+
+    function renderOptionSelect(c) {
+      const options = slotOptions[c.slotKey] || [];
+      const optsHtml = options.map(o => `
+        <option value="${escapeHtml(o.option_key)}" ${o.option_key === c.optionKey ? 'selected' : ''}>
+          ${escapeHtml(o.display_name)}
+        </option>
+      `).join('');
+
+      return optsHtml + `
+        <option value="__off__" ${c.optionKey === '__off__' ? 'selected' : ''}>
+          — Turn off —
+        </option>
+      `;
+    }
+
+    // ============================================================
+    // OPTION SWAP ON CARDS 3 & 4
+    // ============================================================
+    async function onSlotOptionChange(comboKey, newOptionKey) {
+      const c = currentCombo[comboKey];
+      if (!c) return;
+
+      // Off state
+      if (newOptionKey === '__off__') {
+        c.optionKey = '__off__';
+        c.product = null;
+        renderGrid();
+        return;
+      }
+
+      // Get candidate categories for this option
+      const catIds = slotOptionCategories[c.slotKey]?.[newOptionKey] || [];
+      if (catIds.length === 0) {
+        alert('No categories mapped for this option yet.');
+        c.optionKey = newOptionKey;
+        c.product = null;
+        renderGrid();
+        return;
+      }
+
+      // Fetch candidates
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, slug, image_url, brand_id, color, style')
+        .in('category_id', catIds)
+        .eq('audience', currentAudience)
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .limit(40);
+
+      if (error || !data || data.length === 0) {
+        c.optionKey = newOptionKey;
+        c.product = null;
+        renderGrid();
+        return;
+      }
+
+      // Pick a random product
+      c.optionKey = newOptionKey;
+      c.product = pickRandom(data);
+      renderGrid();
+    }
+
+    // ============================================================
+    // SHUFFLE
+    // ============================================================
+    async function shuffleCombo() {
+      const btn = document.getElementById('shuffleBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Shuffling…';
+      try {
+        // Keep current option selections for switchable slots, but reroll products
+        const slot3Option = currentCombo.slot3.optionKey;
+        const slot4Option = currentCombo.slot4.optionKey;
+
+        // Force curated combos out on shuffle — always regenerate
+        await regenerateWithOptions(slot3Option, slot4Option);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Shuffle';
+      }
+    }
+
+    async function regenerateWithOptions(slot3Option, slot4Option) {
+      const grid = document.getElementById('comboGrid');
+      grid.innerHTML = `<div class="combo-loading" style="grid-column:1/-1;">Shuffling…</div>`;
+
+      // Try generate_combos RPC
+      try {
+        const { data, error } = await supabaseClient
+          .rpc('generate_combos', {
+            context_key_param: currentContextKey,
+            audience_param: currentAudience,
+            limit_count_param: 1
+          });
+
+        if (!error && data && Array.isArray(data) && data.length > 0 && !data.error) {
+          const combo = data[0];
+          currentCombo.top.product = combo.top || null;
+          currentCombo.bottom.product = combo.bottom || null;
+        }
+      } catch (err) {
+        console.warn('RPC failed during shuffle');
+      }
+
+      // Fallback for empty top/bottom
+      if (!currentCombo.top.product || !currentCombo.bottom.product) {
+        const topCats = slotOptionCategories['top']?.['top'] || [];
+        const botCats = slotOptionCategories['bottom']?.['bottom'] || [];
+
+        if (!currentCombo.top.product && topCats.length > 0) {
+          const { data } = await supabaseClient
+            .from('products')
+            .select('id, name, slug, image_url, brand_id, color, style')
+            .in('category_id', topCats)
+            .eq('audience', currentAudience)
+            .eq('status', 'published')
+            .is('deleted_at', null)
+            .limit(30);
+          currentCombo.top.product = pickRandom(data || []);
+        }
+
+        if (!currentCombo.bottom.product && botCats.length > 0) {
+          const { data } = await supabaseClient
+            .from('products')
+            .select('id, name, slug, image_url, brand_id, color, style')
+            .in('category_id', botCats)
+            .eq('audience', currentAudience)
+            .eq('status', 'published')
+            .is('deleted_at', null)
+            .limit(30);
+          currentCombo.bottom.product = pickRandom(data || []);
+        }
+      }
+
+      // Reroll slots 3 & 4 with given options
+      await rerollSlot('slot3', slot3Option);
+      await rerollSlot('slot4', slot4Option);
+
+      renderGrid();
+    }
+
+    async function rerollSlot(comboKey, optionKey) {
+      const c = currentCombo[comboKey];
+      if (!c) return;
+
+      if (optionKey === '__off__') {
+        c.optionKey = '__off__';
+        c.product = null;
+        return;
+      }
+
+      c.optionKey = optionKey;
+      const catIds = slotOptionCategories[c.slotKey]?.[optionKey] || [];
+      if (catIds.length === 0) { c.product = null; return; }
+
+      const { data } = await supabaseClient
+        .from('products')
+        .select('id, name, slug, image_url, brand_id, color, style')
+        .in('category_id', catIds)
+        .eq('audience', currentAudience)
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .limit(40);
+
+      c.product = pickRandom(data || []);
+    }
+
+    // ============================================================
+    // AFFILIATE LINK RESOLUTION
+    // ============================================================
+    async function resolveAffiliateLinks() {
+      const buttons = document.querySelectorAll('.card-shop-btn');
+      if (buttons.length === 0) return;
+
+      const productIds = [...new Set(Array.from(buttons)
+        .map(b => parseInt(b.dataset.productId))
+        .filter(id => !isNaN(id) && id > 0))];
+
+      if (productIds.length === 0) return;
+
+      const country = await getCountryCode();
+
+      const { data, error } = await supabaseClient
+        .from('product_affiliate_links')
+        .select('product_id, retailer_id, country_code, affiliate_key, link_url, priority, is_active')
+        .in('product_id', productIds)
+        .eq('is_active', true)
+        .order('priority', { ascending: false });
+
+      if (error || !data) return;
+
+      const byProduct = {};
+      data.forEach(l => {
+        if (!byProduct[l.product_id]) byProduct[l.product_id] = [];
+        byProduct[l.product_id].push(l);
+      });
+
+      buttons.forEach(btn => {
+        const pid = parseInt(btn.dataset.productId);
+        const pool = byProduct[pid] || [];
+        let pick = pool.find(l => l.country_code === country);
+        if (!pick) pick = pool.find(l => l.country_code === 'default');
+        if (!pick) pick = pool[0];
+
+        if (pick) {
+          btn.classList.remove('disabled');
+          btn.dataset.retailerId = pick.retailer_id;
+          btn.dataset.affiliateKey = pick.affiliate_key;
+          btn.dataset.linkUrl = pick.link_url;
+        } else {
+          btn.classList.add('disabled');
+        }
+      });
+    }
+
+    async function onShopClick(e, btn) {
+      e.preventDefault();
+      if (btn.classList.contains('disabled')) return;
+      const url = btn.dataset.linkUrl;
+      if (!url) return;
+
+      // Find the product ID in this card
+      const pid = parseInt(btn.dataset.productId);
+
+      trackClick({
+        product_id: pid,
+        retailer_id: btn.dataset.retailerId || null,
+        affiliate_key: btn.dataset.affiliateKey || null,
+        link_url: url
+      });
+
+      window.open(url, '_blank', 'noopener');
+    }
+
+    // ============================================================
+    // PINTEREST SAVE
+    // ============================================================
+    function saveToPinterest() {
+      const ctx = allContexts.find(c => c.context_key === currentContextKey);
+      const audienceCap = currentAudience.charAt(0).toUpperCase() + currentAudience.slice(1);
+      const title = `${ctx ? ctx.display_name : 'Outfit'} Combo for ${audienceCap} — Zheoa`;
+      const desc = `Top + Bottom + ${prettyOptionKey(currentCombo.slot3.optionKey)} + ${prettyOptionKey(currentCombo.slot4.optionKey)} — a ${ctx ? ctx.display_name.toLowerCase() : 'styled'} look for ${audienceCap.toLowerCase()}.`;
+
+      // Pick the first product image as the pin image (if available)
+      const img = currentCombo.top.product?.image_url
+        || currentCombo.bottom.product?.image_url
+        || currentCombo.slot3.product?.image_url
+        || currentCombo.slot4.product?.image_url
+        || '';
+
+      const url = window.location.href;
+      const pinterestUrl = `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(img)}&description=${encodeURIComponent(title + ' — ' + desc)}`;
+      window.open(pinterestUrl, '_blank', 'width=620,height=700');
+    }
+
+    // ============================================================
+    // COPY LINK
+    // ============================================================
+    function copyComboLink() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('audience', currentAudience);
+      url.searchParams.set('context', currentContextKey);
+
+      const link = url.toString();
+
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+          showToast('Link copied!');
+        }).catch(() => {
+          prompt('Copy this link:', link);
+        });
+      } else {
+        prompt('Copy this link:', link);
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 22px;border-radius:30px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.2);';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2200);
+    }
+
+    // ============================================================
+    // WIRE UP AUDIENCE TABS + CONTEXT TYPE TABS
+    // ============================================================
+    function wireAudienceTabs() {
+      document.querySelectorAll('.audience-tab').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.audience-tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentAudience = btn.dataset.audience;
+          loadNewCombo();
+        };
+      });
+
+      // Set initial active based on URL
+      document.querySelectorAll('.audience-tab').forEach(b => {
+        b.classList.toggle('active', b.dataset.audience === currentAudience);
+      });
+    }
+
+    function wireContextTypeTabs() {
+      document.querySelectorAll('.context-type-tab').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.context-type-tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentContextType = btn.dataset.type;
+          // Reset current key for the new type
+          currentContextKey = '';
+          renderContextChips();
+          loadNewCombo();
+        };
+      });
+    }
+
+    // ============================================================
+    // PRODUCT URL PARAM PREFIX BANNER
+    // ============================================================
+    async function handleProductPrefix() {
+      if (!URL_PRODUCT) return;
+
+      const { data } = await supabaseClient
+        .from('products')
+        .select('id, name, slug, audience, category_id')
+        .eq('id', parseInt(URL_PRODUCT))
+        .maybeSingle();
+
+      if (!data) return;
+
+      // If the product has an audience, switch to it
+      if (data.audience && ['women', 'men', 'kids'].includes(data.audience)) {
+        currentAudience = data.audience;
+        document.querySelectorAll('.audience-tab').forEach(b => {
+          b.classList.toggle('active', b.dataset.audience === currentAudience);
+        });
+      }
+
+      const banner = document.getElementById('productPrefixBanner');
+      banner.innerHTML = `✨ Showing combos similar to <strong>${escapeHtml(data.name)}</strong>`;
+      banner.classList.add('show');
+    }
+
+    // ============================================================
+    // BOOT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      checkCookieConsent();
+
+      // Set the correct context type tab as active based on URL context (best effort)
+      if (URL_CONTEXT) {
+        // We'll figure out the type after loading contexts
+      }
+
+      await loadSlotsAndOptions();
+      await loadBrands();
+      await loadContexts();
+
+      // After contexts loaded, if URL_CONTEXT was provided, switch to its type
+      if (URL_CONTEXT) {
+        const ctx = allContexts.find(c => c.context_key === URL_CONTEXT);
+        if (ctx) {
+          currentContextType = ctx.context_type;
+          document.querySelectorAll('.context-type-tab').forEach(b => {
+            b.classList.toggle('active', b.dataset.type === currentContextType);
+          });
+          renderContextChips();
+        }
+      }
+
+      wireAudienceTabs();
+      wireContextTypeTabs();
+
+      await handleProductPrefix();
+
+      // Initial combo
+      await loadNewCombo();
+    });
+  </script>
+
+</body>
+</html>
