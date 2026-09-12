@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — Zheoa</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --yellow: #ffdb10; --yellow-dark: #e6c200; --yellow-darker: #b39b00; --yellow-light: #fff8e1; --bg: #fdfdfc; --text: #1a1a2e; --muted: #5a5a72; --radius: 16px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px; text-align: center;
+    }
+    .wrap { max-width: 520px; }
+    .icon { font-size: 4rem; margin-bottom: 16px; }
+    h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.02em; }
+    p { color: var(--muted); font-size: 1rem; margin-bottom: 26px; line-height: 1.6; }
+    .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--yellow); color: var(--text); }
+    .btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: var(--text); border: 2px solid #eaeaea; }
+    .btn-secondary:hover { border-color: var(--yellow); background: var(--yellow-light); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="icon">👗</div>
+    <h1>Page not found</h1>
+    <p>The page you're looking for doesn't exist, or may have moved. Let's get you back to something beautiful.</p>
+    <div class="btns">
+      <a href="index.html" class="btn btn-primary">← Home</a>
+      <a href="combo.html" class="btn btn-secondary">✨ Build a Combo</a>
+    </div>
+  </div>
+</body>
+</html>
