@@ -23,6 +23,10 @@
       --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
       --radius: 16px;
       --max-width: 1400px;
+      --danger-bg: #ffebee;
+      --danger-text: #c62828;
+      --success-bg: #e8f5e9;
+      --success-text: #2e7d32;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -50,10 +54,7 @@
       gap: 12px;
     }
     .top-bar h1 { font-size: 1.6rem; }
-    .top-bar .user-info {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
+    .top-bar .user-info { font-size: 0.9rem; color: var(--muted); }
     .logout-btn {
       background: none;
       border: none;
@@ -75,15 +76,8 @@
       padding: 32px;
       box-shadow: var(--shadow);
     }
-    .login-box h2 {
-      margin-bottom: 6px;
-      font-size: 1.5rem;
-    }
-    .login-box p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-    }
+    .login-box h2 { margin-bottom: 6px; font-size: 1.5rem; }
+    .login-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
     .login-box input {
       width: 100%;
       padding: 12px 16px;
@@ -115,14 +109,14 @@
     .login-box .btn:hover { background: var(--yellow-dark); }
     .login-box .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .error-msg {
-      color: #d32f2f;
+      color: var(--danger-text);
       margin-top: 12px;
       font-size: 0.9rem;
       display: none;
       padding: 10px 14px;
-      background: #ffebee;
+      background: var(--danger-bg);
       border-radius: 8px;
-      border-left: 3px solid #d32f2f;
+      border-left: 3px solid var(--danger-text);
     }
 
     /* ===== TABS ===== */
@@ -156,7 +150,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ===== PLACEHOLDER CARDS ===== */
+    /* ===== PLACEHOLDER ===== */
     .placeholder {
       background: var(--surface);
       border: 1px dashed var(--border);
@@ -165,35 +159,318 @@
       text-align: center;
       color: var(--muted);
     }
-    .placeholder .icon {
-      font-size: 3rem;
-      display: block;
-      margin-bottom: 12px;
+    .placeholder .icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+    .placeholder h3 { color: var(--text); margin-bottom: 6px; font-size: 1.2rem; }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      background: var(--surface);
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
-    .placeholder h3 {
+    .toolbar label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+    }
+    .toolbar select, .toolbar input {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: white;
+    }
+    .toolbar .spacer { flex: 1; }
+
+    .btn-primary {
+      background: var(--yellow);
       color: var(--text);
-      margin-bottom: 6px;
-      font-size: 1.2rem;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
     }
+    .btn-primary:hover { background: var(--yellow-dark); }
+
+    .btn-edit {
+      background: #e3f2fd;
+      color: #0d47a1;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .btn-edit:hover { background: #bbdefb; }
+
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border: none;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      margin-left: 6px;
+    }
+    .btn-danger:hover { background: #ffcdd2; }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--border);
+      background: #fafafa;
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafcff; }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-women { background: #fce4ec; color: #ad1457; }
+    .badge-men   { background: #e3f2fd; color: #0d47a1; }
+    .badge-kids  { background: #fff8e1; color: #b39b00; }
+    .badge-unisex{ background: #ede7f6; color: #5e35b1; }
+
+    .muted { color: var(--muted); font-size: 0.85rem; }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius);
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .modal-header h2 { font-size: 1.25rem; }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 0 8px;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: 0.2s;
+      background: white;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(255, 219, 16, 0.2);
+    }
+    .form-group small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      justify-content: flex-end;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+    .form-actions .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .form-actions .btn-save { background: var(--yellow); color: var(--text); }
+    .form-actions .btn-save:hover { background: var(--yellow-dark); }
+    .form-actions .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .form-actions .btn-cancel {
+      background: transparent;
+      color: var(--muted);
+      border: 2px solid var(--border);
+    }
+    .form-actions .btn-cancel:hover { border-color: var(--yellow); }
 
     @media (max-width: 700px) {
       .top-bar h1 { font-size: 1.2rem; }
       .tab-nav button { padding: 8px 14px; font-size: 0.78rem; }
+      .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
   <div id="app">
-    <div style="text-align:center; padding: 60px 20px; color: var(--muted);">
-      Loading…
+    <div style="text-align:center; padding: 60px 20px; color: var(--muted);">Loading…</div>
+  </div>
+
+  <!-- ============================================================
+       CATEGORY MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="categoryModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="categoryModalTitle">Add New Category</h2>
+        <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+      </div>
+      <form id="categoryForm" onsubmit="saveCategory(event)">
+        <input type="hidden" id="editCategoryId" value="" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="categoryAudienceInput">Audience *</label>
+            <select id="categoryAudienceInput" required onchange="onCategoryAudienceChange()">
+              <option value="">Select audience…</option>
+              <option value="women">Women</option>
+              <option value="men">Men</option>
+              <option value="kids">Kids</option>
+              <option value="unisex">Unisex</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="categoryParentInput">Parent Category</label>
+            <select id="categoryParentInput">
+              <option value="">— None (top-level) —</option>
+            </select>
+            <small>Leave blank for a top-level category.</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="categoryNameInput">Name *</label>
+            <input type="text" id="categoryNameInput" placeholder="e.g. Dresses" required oninput="autoSlugCategory()" />
+          </div>
+          <div class="form-group">
+            <label for="categorySlugInput">Slug *</label>
+            <input type="text" id="categorySlugInput" placeholder="e.g. dresses" required oninput="this.dataset.userEdited='1'" />
+            <small>URL-friendly. Lowercase, hyphens, no spaces.</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="categorySortOrderInput">Sort Order</label>
+            <input type="number" id="categorySortOrderInput" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="categoryImageInput">Image URL</label>
+            <input type="url" id="categoryImageInput" placeholder="https://…" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeCategoryModal()">Cancel</button>
+          <button type="submit" class="btn btn-save" id="categorySaveBtn">Save Category</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- Config -->
   <script src="config.js"></script>
-
-  <!-- Supabase client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -216,51 +493,48 @@
     let currentTab = 'dashboard';
     let isAdmin = false;
 
+    // Cache for categories (used by filter dropdowns and modal)
+    let allCategories = [];
+    let categoryFilterAudience = 'all';
+    let categoryFilterParent = 'all';
+
     // ============================================================
     // TAB DEFINITIONS
     // ============================================================
     const TABS = [
-      { key: 'dashboard',        label: '📊 Dashboard',       icon: '📊' },
-      { key: 'articles',         label: '📄 Articles',        icon: '📄' },
-      { key: 'products',         label: '👕 Products',        icon: '👕' },
-      { key: 'categories',       label: '🏷️ Categories',      icon: '🏷️' },
-      { key: 'brands',           label: '🏢 Brands',          icon: '🏢' },
-      { key: 'retailers',        label: '🛒 Retailers',       icon: '🛒' },
-      { key: 'affiliates',       label: '🔗 Affiliate Links', icon: '🔗' },
-      { key: 'contexts',         label: '🎯 Combo Contexts',  icon: '🎯' },
-      { key: 'curated',          label: '✨ Curated Combos',  icon: '✨' }
+      { key: 'dashboard',  label: '📊 Dashboard' },
+      { key: 'articles',   label: '📄 Articles' },
+      { key: 'products',   label: '👕 Products' },
+      { key: 'categories', label: '🏷️ Categories' },
+      { key: 'brands',     label: '🏢 Brands' },
+      { key: 'retailers',  label: '🛒 Retailers' },
+      { key: 'affiliates', label: '🔗 Affiliate Links' },
+      { key: 'contexts',   label: '🎯 Combo Contexts' },
+      { key: 'curated',    label: '✨ Curated Combos' }
     ];
+
+    // Tabs that already have custom HTML instead of the placeholder
+    const IMPLEMENTED_TABS = ['categories'];
 
     // ============================================================
     // SESSION CHECK
     // ============================================================
     async function checkSession() {
       const { data: { session }, error } = await supabaseClient.auth.getSession();
-
-      if (error) {
-        console.warn('Session check error:', error);
-        renderLogin();
-        return;
-      }
-
-      if (!session) {
-        renderLogin();
-        return;
-      }
+      if (error || !session) { renderLogin(); return; }
 
       currentUser = session.user;
 
-      // Verify admin
-      const { data: adminRow, error: adminErr } = await supabaseClient
+      const { data: adminRow } = await supabaseClient
         .from('admin_users')
         .select('user_id')
         .eq('user_id', currentUser.id)
         .maybeSingle();
 
-      if (adminErr || !adminRow) {
+      if (!adminRow) {
         await supabaseClient.auth.signOut();
         currentUser = null;
-        renderLogin('Your account is not authorized as an admin. Ask the site owner to add your user ID to the admin_users table.');
+        renderLogin('Your account is not authorized as an admin.');
         return;
       }
 
@@ -293,7 +567,6 @@
       const password = document.getElementById('adminPassword').value;
       const errorEl = document.getElementById('loginError');
       const btn = document.getElementById('loginBtn');
-
       errorEl.style.display = 'none';
 
       if (!email || !password) {
@@ -307,7 +580,6 @@
 
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
         if (error) {
           errorEl.textContent = error.message;
           errorEl.style.display = 'block';
@@ -317,15 +589,13 @@
         }
 
         currentUser = data.user;
-
-        // Verify admin
-        const { data: adminRow, error: adminErr } = await supabaseClient
+        const { data: adminRow } = await supabaseClient
           .from('admin_users')
           .select('user_id')
           .eq('user_id', currentUser.id)
           .maybeSingle();
 
-        if (adminErr || !adminRow) {
+        if (!adminRow) {
           await supabaseClient.auth.signOut();
           currentUser = null;
           errorEl.textContent = 'This account is not an admin.';
@@ -361,15 +631,18 @@
         `<button data-tab="${t.key}" onclick="switchTab('${t.key}')">${t.label}</button>`
       ).join('');
 
-      const tabContents = TABS.map(t =>
-        `<div class="tab-content" id="tab-${t.key}">
+      const tabContents = TABS.map(t => {
+        if (t.key === 'categories') {
+          return `<div class="tab-content" id="tab-categories">${categoriesTabHTML()}</div>`;
+        }
+        return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
-            <span class="icon">${t.icon}</span>
+            <span class="icon">${t.label.split(' ')[0]}</span>
             <h3>${t.label.replace(/^[^\s]+\s/, '')}</h3>
             <p>This section will be built in a later step.</p>
           </div>
-        </div>`
-      ).join('');
+        </div>`;
+      }).join('');
 
       document.getElementById('app').innerHTML = `
         <div class="container">
@@ -382,7 +655,6 @@
           </div>
 
           <nav class="tab-nav">${tabButtons}</nav>
-
           ${tabContents}
         </div>
       `;
@@ -399,13 +671,298 @@
       document.querySelectorAll('.tab-nav button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
       });
-
       document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.toggle('active', el.id === 'tab-' + tab);
       });
 
-      // Later steps will hook data loading here, e.g.
-      // if (tab === 'products') loadProducts();
+      if (tab === 'categories') loadCategories();
+    }
+
+    // ============================================================
+    // CATEGORIES TAB — HTML
+    // ============================================================
+    function categoriesTabHTML() {
+      return `
+        <div class="toolbar">
+          <label>Audience:
+            <select id="catFilterAudience" onchange="onCategoryFilterChange()">
+              <option value="all">All</option>
+              <option value="women">Women</option>
+              <option value="men">Men</option>
+              <option value="kids">Kids</option>
+              <option value="unisex">Unisex</option>
+            </select>
+          </label>
+          <label>Parent:
+            <select id="catFilterParent" onchange="onCategoryFilterChange()">
+              <option value="all">All</option>
+              <option value="top">Top-level only</option>
+              <option value="leaf">Subcategories only</option>
+            </select>
+          </label>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="openCategoryModal()">+ Add Category</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Audience</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Parent</th>
+                <th>Sort</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="categoriesTableBody">
+              <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // CATEGORIES — LOAD
+    // ============================================================
+    async function loadCategories() {
+      const tbody = document.getElementById('categoriesTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading…</td></tr>';
+
+      const { data, error } = await supabaseClient
+        .from('fashion_categories')
+        .select('id, audience, name, slug, parent_id, sort_order, image_url')
+        .order('audience', { ascending: true })
+        .order('sort_order', { ascending: true })
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('loadCategories error:', error);
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state" style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      allCategories = data || [];
+
+      // Build parent map
+      const parentMap = {};
+      allCategories.forEach(c => { parentMap[c.id] = c; });
+
+      // Apply filters
+      let filtered = allCategories;
+      if (categoryFilterAudience !== 'all') {
+        filtered = filtered.filter(c => c.audience === categoryFilterAudience);
+      }
+      if (categoryFilterParent === 'top') {
+        filtered = filtered.filter(c => c.parent_id === null);
+      } else if (categoryFilterParent === 'leaf') {
+        filtered = filtered.filter(c => c.parent_id !== null);
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No categories match the current filters.</td></tr>';
+        return;
+      }
+
+      let rows = '';
+      filtered.forEach(c => {
+        const parent = c.parent_id ? (parentMap[c.parent_id]?.name || '—') : '—';
+        rows += `
+          <tr>
+            <td>${c.id}</td>
+            <td><span class="badge badge-${escapeHtml(c.audience)}">${escapeHtml(c.audience)}</span></td>
+            <td><strong>${escapeHtml(c.name)}</strong></td>
+            <td><code>${escapeHtml(c.slug)}</code></td>
+            <td class="muted">${escapeHtml(parent)}</td>
+            <td>${c.sort_order ?? 0}</td>
+            <td style="text-align:right; white-space:nowrap;">
+              <button class="btn-edit" onclick="editCategory(${c.id})">✏️ Edit</button>
+              <button class="btn-danger" onclick="deleteCategory(${c.id})">🗑️ Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function onCategoryFilterChange() {
+      categoryFilterAudience = document.getElementById('catFilterAudience').value;
+      categoryFilterParent = document.getElementById('catFilterParent').value;
+      loadCategories();
+    }
+
+    // ============================================================
+    // CATEGORIES — MODAL OPEN/CLOSE
+    // ============================================================
+    function openCategoryModal(category) {
+      const isEdit = !!category;
+      document.getElementById('categoryModalTitle').textContent = isEdit ? 'Edit Category' : 'Add New Category';
+      document.getElementById('editCategoryId').value = isEdit ? category.id : '';
+
+      const audienceSelect = document.getElementById('categoryAudienceInput');
+      audienceSelect.value = isEdit ? category.audience : '';
+
+      // Populate parent dropdown (depends on audience)
+      populateCategoryParentDropdown(isEdit ? category.id : null, isEdit ? category.audience : '');
+
+      document.getElementById('categoryNameInput').value = isEdit ? category.name : '';
+      document.getElementById('categorySlugInput').value = isEdit ? category.slug : '';
+      document.getElementById('categorySlugInput').dataset.userEdited = isEdit ? '1' : '';
+      document.getElementById('categorySortOrderInput').value = isEdit ? (category.sort_order ?? 0) : 0;
+      document.getElementById('categoryImageInput').value = isEdit ? (category.image_url || '') : '';
+      document.getElementById('categorySaveBtn').textContent = isEdit ? 'Update Category' : 'Save Category';
+
+      document.getElementById('categoryModal').classList.add('show');
+      setTimeout(() => document.getElementById('categoryNameInput')?.focus(), 60);
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.remove('show');
+      document.getElementById('categoryForm').reset();
+      document.getElementById('editCategoryId').value = '';
+    }
+
+    function onCategoryAudienceChange() {
+      const audience = document.getElementById('categoryAudienceInput').value;
+      const editingId = parseInt(document.getElementById('editCategoryId').value) || null;
+      populateCategoryParentDropdown(editingId, audience);
+    }
+
+    function populateCategoryParentDropdown(excludeId, audience) {
+      const select = document.getElementById('categoryParentInput');
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">— None (top-level) —</option>';
+
+      // Only show parents matching the selected audience
+      const pool = audience
+        ? allCategories.filter(c => c.audience === audience && c.parent_id === null)
+        : allCategories.filter(c => c.parent_id === null);
+
+      pool.forEach(c => {
+        if (excludeId && c.id === excludeId) return; // can't be its own parent
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name} (${c.slug})`;
+        select.appendChild(opt);
+      });
+
+      if (currentVal) select.value = currentVal;
+    }
+
+    // ============================================================
+    // CATEGORIES — SAVE
+    // ============================================================
+    function autoSlugCategory() {
+      const nameInput = document.getElementById('categoryNameInput');
+      const slugInput = document.getElementById('categorySlugInput');
+      if (!slugInput || slugInput.dataset.userEdited === '1') return;
+      slugInput.value = slugify(nameInput.value);
+    }
+
+    async function saveCategory(e) {
+      e.preventDefault();
+      const id = document.getElementById('editCategoryId').value;
+      const audience = document.getElementById('categoryAudienceInput').value;
+      const parentRaw = document.getElementById('categoryParentInput').value;
+      const name = document.getElementById('categoryNameInput').value.trim();
+      const slug = document.getElementById('categorySlugInput').value.trim().toLowerCase();
+      const sort_order = parseInt(document.getElementById('categorySortOrderInput').value) || 0;
+      const image_url = document.getElementById('categoryImageInput').value.trim();
+
+      if (!audience || !name || !slug) {
+        alert('Please fill in Audience, Name, and Slug.');
+        return;
+      }
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        alert('Slug can only contain lowercase letters, numbers, and hyphens.');
+        return;
+      }
+
+      const payload = {
+        audience,
+        parent_id: parentRaw ? parseInt(parentRaw) : null,
+        name,
+        slug,
+        sort_order,
+        image_url: image_url || null
+      };
+
+      const btn = document.getElementById('categorySaveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        if (id) {
+          const { error } = await supabaseClient
+            .from('fashion_categories')
+            .update(payload)
+            .eq('id', parseInt(id));
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('fashion_categories')
+            .insert(payload);
+          if (error) throw error;
+        }
+        closeCategoryModal();
+        await loadCategories();
+      } catch (err) {
+        console.error('saveCategory error:', err);
+        if (err.code === '23505') {
+          alert('Duplicate: a category with this audience + slug already exists.');
+        } else {
+          alert('Error: ' + (err.message || 'Unknown error'));
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Update Category' : 'Save Category';
+      }
+    }
+
+    // ============================================================
+    // CATEGORIES — EDIT
+    // ============================================================
+    function editCategory(id) {
+      const category = allCategories.find(c => c.id === id);
+      if (!category) {
+        alert('Category not found. Reload the tab.');
+        return;
+      }
+      openCategoryModal(category);
+    }
+
+    // ============================================================
+    // CATEGORIES — DELETE
+    // ============================================================
+    async function deleteCategory(id) {
+      const category = allCategories.find(c => c.id === id);
+      if (!category) return;
+
+      const children = allCategories.filter(c => c.parent_id === id);
+      let warning = `Delete "${category.name}"?`;
+      if (children.length > 0) {
+        warning += `\n\n⚠️ This will also delete ${children.length} subcategor${children.length === 1 ? 'y' : 'ies'}. This cannot be undone.`;
+      }
+
+      if (!confirm(warning)) return;
+
+      const { error } = await supabaseClient
+        .from('fashion_categories')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('deleteCategory error:', error);
+        alert('Error: ' + error.message);
+        return;
+      }
+
+      await loadCategories();
     }
 
     // ============================================================
@@ -420,6 +977,26 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
     }
+
+    function slugify(s) {
+      return String(s)
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+    }
+
+    // ============================================================
+    // MODAL — CLOSE ON OVERLAY CLICK / ESC
+    // ============================================================
+    document.getElementById('categoryModal')?.addEventListener('click', function (e) {
+      if (e.target === this) closeCategoryModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeCategoryModal();
+    });
 
     // ============================================================
     // START
