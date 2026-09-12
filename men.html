@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Men's Fashion — Zheoa</title>
+
+  <meta name="description" content="Shop men's fashion: shirts, jeans, chinos, sneakers and accessories." />
+  <meta property="og:title" content="Men's Fashion — Zheoa" />
+  <meta property="og:description" content="Shop men's fashion: shirts, jeans, chinos, sneakers and accessories" />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👗</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://*.supabase.co https://*.pexels.com https://*.googleapis.com https://*.gstatic.com https://api.ipify.org https://ipapi.co https://ip-api.com https://ipinfo.io; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://*.pexels.com https://images.pexels.com https://i.ibb.co; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://api.ipify.org https://ipapi.co https://ip-api.com https://ipinfo.io;" />
+
+  <style>
+    :root {
+      --yellow: #ffdb10;
+      --yellow-dark: #e6c200;
+      --yellow-darker: #b39b00;
+      --yellow-light: #fff8e1;
+      --bg: #fdfdfc;
+      --surface: #ffffff;
+      --text: #1a1a2e;
+      --muted: #5a5a72;
+      --border: #eaeaea;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
+      --max-width: 1240px;
+      --nav-height: 68px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main { flex: 1; }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    /* HEADER */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--yellow);
+      height: var(--nav-height);
+      display: flex; align-items: center;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--yellow-darker); letter-spacing: -0.02em;
+    }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--yellow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(255, 219, 16, 0.35);
+    }
+    .nav-links { display: flex; gap: 28px; font-weight: 600; font-size: 0.95rem; }
+    .nav-links a { padding: 4px 0; border-bottom: 3px solid transparent; transition: 0.2s; }
+    .nav-links a:hover, .nav-links a.active { border-bottom-color: var(--yellow); color: var(--yellow-darker); }
+    .menu-toggle { display: none; font-size: 1.6rem; background: none; border: none; cursor: pointer; padding: 4px 8px; }
+
+    /* AUDIENCE HERO */
+    .audience-hero {
+      text-align: center;
+      padding: 40px 0 36px;
+    }
+    .audience-hero .audience-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .audience-hero h1 {
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+    .audience-hero h1 span {
+      background: var(--yellow-light);
+      color: var(--yellow-darker);
+      padding: 0 14px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .audience-hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* SECTION TITLES */
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 40px 0 18px;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .section-title small {
+      font-weight: 500;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .view-all {
+      color: var(--yellow-darker);
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-bottom: 2px solid var(--yellow);
+    }
+
+    /* CATEGORY TILES */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+    }
+    .category-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 14px;
+      text-align: center;
+      transition: 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .category-tile:hover {
+      border-color: var(--yellow);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(255, 219, 16, 0.14);
+    }
+    .category-tile .cat-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+
+    /* FILTER TOOLBAR */
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+      background: var(--surface);
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .filter-toolbar label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+    }
+    .filter-toolbar select,
+    .filter-toolbar input[type="text"] {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      background: white;
+      color: var(--text);
+    }
+    .filter-toolbar select:focus,
+    .filter-toolbar input[type="text"]:focus {
+      outline: none;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(255, 219, 16, 0.2);
+    }
+    .filter-toolbar .spacer { flex: 1; }
+
+    /* PRODUCT GRID */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
+    .product-card-image {
+      aspect-ratio: 3 / 4;
+      background: #fafafa;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-card-image img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .product-recommended-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: var(--yellow);
+      color: var(--text);
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      box-shadow: 0 4px 12px rgba(255, 219, 16, 0.4);
+    }
+    .product-card-body {
+      padding: 12px 14px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-brand {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .product-name {
+      font-weight: 700;
+      font-size: 0.92rem;
+      line-height: 1.3;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .product-rating {
+      color: #f5a623;
+      font-size: 0.78rem;
+      margin-top: auto;
+    }
+    .product-rating .rating-count {
+      color: var(--muted);
+      font-size: 0.72rem;
+      margin-left: 4px;
+    }
+
+    /* LOAD MORE */
+    .load-more-wrap {
+      text-align: center;
+      margin: 30px 0 20px;
+    }
+    .load-more-btn {
+      background: var(--yellow);
+      color: var(--text);
+      border: none;
+      padding: 12px 36px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .load-more-btn:hover:not(:disabled) {
+      background: var(--yellow-dark);
+      transform: translateY(-2px);
+    }
+    .load-more-btn:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none;
+    }
+
+    /* EMPTY / LOADING */
+    .loading-spinner,
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    .empty-state {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+    .empty-state strong {
+      display: block;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    /* COOKIE BANNER */
+    #cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 4px solid var(--yellow);
+      padding: 16px 24px;
+      z-index: 2000;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    #cookie-banner.show { display: block; }
+    .cookie-banner-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .cookie-banner-text { flex: 1; font-size: 0.9rem; color: var(--muted); min-width: 220px; }
+    .cookie-banner-text a { color: var(--yellow-darker); font-weight: 600; text-decoration: underline; }
+    .cookie-banner-buttons { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-banner-buttons button {
+      padding: 8px 22px;
+      border: none;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-accept { background: var(--yellow); color: var(--text); }
+    .btn-accept:hover { background: var(--yellow-dark); }
+    .btn-decline { background: transparent; color: var(--text); border: 2px solid var(--border); }
+    .btn-decline:hover { border-color: var(--yellow); background: var(--yellow-light); }
+
+    @media (max-width: 700px) {
+      .cookie-banner-inner { flex-direction: column; align-items: stretch; text-align: center; }
+      .cookie-banner-buttons { justify-content: center; }
+    }
+
+    /* FOOTER */
+    footer { background: #0d1c26; color: #b0c4d0; padding: 48px 0 28px; margin-top: 40px; }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; }
+    .footer-brand .logo {
+      color: var(--yellow);
+      font-size: 1.4rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer-brand p { max-width: 340px; margin-top: 10px; font-size: 0.9rem; }
+    .footer-links { display: flex; gap: 48px; flex-wrap: wrap; }
+    .footer-links h4 { color: #fff; margin-bottom: 8px; font-size: 0.95rem; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin: 5px 0; font-size: 0.9rem; }
+    .footer-links a { color: #b0c4d0; }
+    .footer-links a:hover { color: #fff; }
+    .copyright {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 32px;
+      padding-top: 20px;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #8ba0af;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: var(--nav-height);
+        left: 0; right: 0;
+        background: white;
+        padding: 24px;
+        border-bottom: 2px solid var(--yellow);
+        gap: 16px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      }
+      .nav-links.open { display: flex; }
+      .section-title { font-size: 1.2rem; }
+      .filter-toolbar { padding: 12px 14px; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">👗</span>
+        Zheoa
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="men.html" class="active">Men</a>
+        <a href="kids.html">Kids</a>
+        <a href="combo.html">Combo Builder</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+      <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container">
+
+      <section class="audience-hero">
+        <span class="audience-emoji">👔</span>
+        <h1>Men's <span>fashion</span></h1>
+        <p>Shirts, jeans, chinos, sneakers and accessories — curated for every occasion.</p>
+      </section>
+
+      <section>
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="category-grid" id="categoryGrid">
+          <div class="loading-spinner">Loading categories…</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header-row">
+          <h2 class="section-title">All Men's Products</h2>
+        </div>
+
+        <div class="filter-toolbar">
+          <label>
+            Category:
+            <select id="filterCategory" onchange="onFilterChange()">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>
+            Sort:
+            <select id="filterSort" onchange="onFilterChange()">
+              <option value="recommended">Recommended first</option>
+              <option value="newest">Newest</option>
+              <option value="views">Most viewed</option>
+              <option value="rating">Highest rated</option>
+            </select>
+          </label>
+          <label>
+            Search:
+            <input type="text" id="searchInput" placeholder="Name or brand…" oninput="onSearchInput()" style="min-width:180px;" />
+          </label>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+          <div class="loading-spinner">Loading products…</div>
+        </div>
+
+        <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+          <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Load More</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="cookie-banner">
+    <div class="cookie-banner-inner">
+      <div class="cookie-banner-text">
+        🍪 We use localStorage to remember your preferences and improve your experience. By continuing, you agree to our
+        <a href="privacy.html">Privacy Policy</a> and
+        <a href="cookie-policy.html">Cookie Policy</a>.
+      </div>
+      <div class="cookie-banner-buttons">
+        <button class="btn-decline" onclick="declineCookies()">Decline</button>
+        <button class="btn-accept" onclick="acceptCookies()">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo"><span class="logo-mark">👗</span> Zheoa</div>
+          <p>Outfit combos for every occasion, season, and mood.</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="women.html">Women</a></li>
+              <li><a href="kids.html">Kids</a></li>
+              <li><a href="combo.html">Combo Builder</a></li>
+              <li><a href="shop.html">Shop</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="privacy.html">Privacy</a></li>
+              <li><a href="terms.html">Terms</a></li>
+              <li><a href="affiliate-disclosure.html">Affiliate</a></li>
+              <li><a href="cookie-policy.html">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">&copy; 2026 Zheoa. Explore something new.</div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const config = window.ZHEOA_CONFIG || {};
+    const supabaseClient = window.supabase.createClient(
+      config.SUPABASE_URL,
+      config.SUPABASE_ANON_KEY
+    );
+
+    // ============================================================
+    // AUDIENCE — CHANGE THIS FOR MEN/KIDS
+    // ============================================================
+    const AUDIENCE = 'men';
+
+    // ============================================================
+    // PAGINATION + FILTER STATE
+    // ============================================================
+    const LIMIT = 12;
+    let offset = 0;
+    let loading = false;
+    let hasMore = true;
+    let filterCategory = 'all';
+    let filterSort = 'recommended';
+    let searchQuery = '';
+    let allBrandsMap = {};
+
+    // ============================================================
+    // CONSENT + STORAGE
+    // ============================================================
+    function hasConsent() { return localStorage.getItem('cookiesAccepted') === 'true'; }
+
+    function acceptCookies() {
+      localStorage.setItem('cookiesAccepted', 'true');
+      document.getElementById('cookie-banner').classList.remove('show');
+      if (!localStorage.getItem('visitorId')) localStorage.setItem('visitorId', generateId());
+    }
+    function declineCookies() {
+      localStorage.setItem('cookiesAccepted', 'false');
+      document.getElementById('cookie-banner').classList.remove('show');
+      ['visitorId', 'userCountry', 'userCountryTimestamp'].forEach(k => localStorage.removeItem(k));
+    }
+    function checkCookieConsent() {
+      const c = localStorage.getItem('cookiesAccepted');
+      if (c === null) document.getElementById('cookie-banner').classList.add('show');
+    }
+    function generateId() {
+      if (window.crypto?.randomUUID) return crypto.randomUUID();
+      return 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2, 11);
+    }
+
+    // ============================================================
+    // UI HELPERS
+    // ============================================================
+    function toggleMobileMenu() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // ============================================================
+    // PRODUCT CARD
+    // ============================================================
+    function renderProductCard(p) {
+      const brandName = p.brand_id && allBrandsMap[p.brand_id] ? allBrandsMap[p.brand_id].name : '';
+      const img = p.image_url
+        ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none';" />`
+        : '';
+      const recBadge = p.is_recommended ? '<div class="product-recommended-badge">⭐ PICK</div>' : '';
+      const ratingHtml = p.rating != null
+        ? `<div class="product-rating">★ ${Number(p.rating).toFixed(1)} <span class="rating-count">(${p.rating_count || 0})</span></div>`
+        : '';
+
+      return `
+        <a href="product.html?slug=${encodeURIComponent(p.slug)}" class="product-card">
+          <div class="product-card-image">
+            ${recBadge}
+            ${img}
+          </div>
+          <div class="product-card-body">
+            ${brandName ? `<div class="product-brand">${escapeHtml(brandName)}</div>` : ''}
+            <div class="product-name">${escapeHtml(p.name)}</div>
+            ${ratingHtml}
+          </div>
+        </a>
+      `;
+    }
+
+    // ============================================================
+    // LOAD CATEGORIES (top-level, audience-filtered)
+    // ============================================================
+    async function loadCategories() {
+      const grid = document.getElementById('categoryGrid');
+      const select = document.getElementById('filterCategory');
+
+      const { data, error } = await supabaseClient
+        .from('fashion_categories')
+        .select('id, name, slug, parent_id, sort_order')
+        .eq('audience', AUDIENCE)
+        .is('parent_id', null)
+        .order('sort_order', { ascending: true })
+        .order('name', { ascending: true });
+
+      if (error || !data || data.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><strong>No categories yet</strong></div>`;
+        return;
+      }
+
+      // Tiles
+      grid.innerHTML = data.map(c => `
+        <a href="category.html?audience=${AUDIENCE}&slug=${encodeURIComponent(c.slug)}" class="category-tile">
+          <div class="cat-name">${escapeHtml(c.name)}</div>
+        </a>
+      `).join('');
+
+      // Populate filter dropdown
+      data.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+      });
+
+      // Also add subcategories to filter dropdown
+      const { data: subs } = await supabaseClient
+        .from('fashion_categories')
+        .select('id, name, parent_id, sort_order')
+        .eq('audience', AUDIENCE)
+        .not('parent_id', 'is', null)
+        .order('sort_order', { ascending: true });
+
+      if (subs && subs.length > 0) {
+        subs.forEach(s => {
+          const parent = data.find(p => p.id === s.parent_id);
+          if (!parent) return;
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = `   ↳ ${s.name}`;
+          select.appendChild(opt);
+        });
+      }
+    }
+
+    // ============================================================
+    // LOAD BRANDS (for card display)
+    // ============================================================
+    async function loadBrands() {
+      const { data } = await supabaseClient.from('brands').select('id, name');
+      (data || []).forEach(b => { allBrandsMap[b.id] = b; });
+    }
+
+    // ============================================================
+    // LOAD PRODUCTS
+    // ============================================================
+    async function loadProducts(append = false) {
+      if (loading) return;
+      loading = true;
+
+      const grid = document.getElementById('productGrid');
+      const btn = document.getElementById('loadMoreBtn');
+      const wrap = document.getElementById('loadMoreWrap');
+
+      if (!append) {
+        offset = 0;
+        hasMore = true;
+        grid.innerHTML = '<div class="loading-spinner">Loading products…</div>';
+      } else {
+        btn.disabled = true;
+        btn.textContent = '⏳ Loading…';
+      }
+
+      try {
+        let query = supabaseClient
+          .from('products')
+          .select('id, name, slug, image_url, brand_id, category_id, rating, rating_count, is_recommended, created_at, views')
+          .eq('status', 'published')
+          .eq('audience', AUDIENCE)
+          .is('deleted_at', null);
+
+        if (filterCategory !== 'all') {
+          query = query.eq('category_id', parseInt(filterCategory));
+        }
+
+        if (searchQuery) {
+          const q = `%${searchQuery}%`;
+          query = query.or(`name.ilike.${q},slug.ilike.${q}`);
+        }
+
+        if (filterSort === 'newest') {
+          query = query.order('created_at', { ascending: false });
+        } else if (filterSort === 'views') {
+          query = query.order('views', { ascending: false });
+        } else if (filterSort === 'rating') {
+          query = query.order('rating', { ascending: false, nullsFirst: false });
+        } else {
+          query = query.order('is_recommended', { ascending: false }).order('created_at', { ascending: false });
+        }
+
+        query = query.range(offset, offset + LIMIT - 1);
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        if (!append) {
+          if (!data || data.length === 0) {
+            grid.innerHTML = `
+              <div class="empty-state">
+                <strong>No products found</strong>
+                ${searchQuery ? 'Try a different search.' : 'Products will appear here once added in admin.'}
+              </div>
+            `;
+            wrap.style.display = 'none';
+            return;
+          }
+          grid.innerHTML = data.map(renderProductCard).join('');
+        } else {
+          if (!data || data.length === 0) {
+            hasMore = false;
+          } else {
+            grid.insertAdjacentHTML('beforeend', data.map(renderProductCard).join(''));
+          }
+        }
+
+        offset += (data || []).length;
+        hasMore = (data || []).length === LIMIT;
+
+        wrap.style.display = hasMore ? 'block' : 'none';
+
+      } catch (err) {
+        console.error('loadProducts error:', err);
+        if (!append) {
+          grid.innerHTML = `<div class="empty-state">⚠️ Could not load products.</div>`;
+        }
+      } finally {
+        loading = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Load More'; }
+      }
+    }
+
+    function loadMore() {
+      if (hasMore && !loading) loadProducts(true);
+    }
+
+    // ============================================================
+    // FILTER / SEARCH HANDLERS
+    // ============================================================
+    function onFilterChange() {
+      filterCategory = document.getElementById('filterCategory').value;
+      filterSort = document.getElementById('filterSort').value;
+      loadProducts(false);
+    }
+
+    let searchTimer = null;
+    function onSearchInput() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        searchQuery = document.getElementById('searchInput').value.trim();
+        loadProducts(false);
+      }, 300);
+    }
+
+    // ============================================================
+    // BOOT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      checkCookieConsent();
+      await loadBrands();
+      await loadCategories();
+      await loadProducts(false);
+    });
+  </script>
+
+</body>
+</html>
