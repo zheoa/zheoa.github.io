@@ -305,6 +305,25 @@
       .tab-nav button { padding: 8px 14px; font-size: 0.78rem; }
       .form-row, .form-row-3 { grid-template-columns: 1fr; }
     }
+    /* Affiliate Links extras */
+    .badge-active   { background: #e8f5e9; color: #2e7d32; }
+    .badge-inactive { background: #f5f5f5; color: #616161; }
+    .aff-key-code {
+      background: #f0f2f5;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+    }
+    .priority-pill {
+      display: inline-block;
+      background: #ede7f6;
+      color: #5e35b1;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -599,7 +618,77 @@
       </form>
     </div>
   </div>
+  <!-- ============================================================
+       PRODUCT AFFILIATE LINK MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="affiliateModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="affiliateModalTitle">Add Affiliate Link</h2>
+        <button class="modal-close" onclick="closeAffiliateModal()">&times;</button>
+      </div>
+      <form id="affiliateForm" onsubmit="saveAffiliate(event)">
+        <input type="hidden" id="editAffiliateId" value="" />
 
+        <div class="form-group">
+          <label for="affiliateProductInput">Product *</label>
+          <select id="affiliateProductInput" required>
+            <option value="">Select product…</option>
+          </select>
+          <small>Only products with <code>status = 'published'</code> are shown to the public, but you can add links for any product here.</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="affiliateRetailerInput">Retailer *</label>
+            <select id="affiliateRetailerInput" required onchange="onAffiliateRetailerChange()">
+              <option value="">Select retailer…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="affiliateCountryInput">Country *</label>
+            <select id="affiliateCountryInput" required>
+              <option value="">Select country…</option>
+              <option value="US">🇺🇸 US</option>
+              <option value="GB">🇬🇧 GB</option>
+              <option value="IT">🇮🇹 IT</option>
+              <option value="IN">🇮🇳 IN</option>
+              <option value="default">🌐 default (fallback)</option>
+            </select>
+            <small>Use <code>default</code> as a fallback when no country-specific link exists.</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="affiliateKeyInput">Affiliate Key *</label>
+            <input type="text" id="affiliateKeyInput" placeholder="e.g. amazon_us_blouse" required />
+            <small>Must match the <code>data-affiliate-key</code> in product HTML.</small>
+          </div>
+          <div class="form-group">
+            <label for="affiliatePriorityInput">Priority</label>
+            <input type="number" id="affiliatePriorityInput" value="0" min="0" />
+            <small>Higher = preferred when multiple links exist for the same product/country.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="affiliateUrlInput">Link URL *</label>
+          <input type="url" id="affiliateUrlInput" placeholder="https://www.amazon.com/…" required />
+        </div>
+
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="affiliateActiveInput" checked />
+          <label for="affiliateActiveInput" style="margin:0;font-weight:600;">Active</label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeAffiliateModal()">Cancel</button>
+          <button type="submit" class="btn btn-save" id="affiliateSaveBtn">Save Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -628,6 +717,13 @@
     let allBrands = [];
     let allRetailers = [];
     let allProducts = [];
+    let allAffiliateLinks = [];
+
+    // Affiliate link filters
+    let affiliateFilterProduct  = 'all';
+    let affiliateFilterRetailer = 'all';
+    let affiliateFilterCountry  = 'all';
+    let affiliateSearchQuery    = '';
 
     // Filters
     let categoryFilterAudience = 'all';
@@ -760,6 +856,7 @@
         if (t.key === 'brands')     return `<div class="tab-content" id="tab-brands">${brandsTabHTML()}</div>`;
         if (t.key === 'retailers')  return `<div class="tab-content" id="tab-retailers">${retailersTabHTML()}</div>`;
         if (t.key === 'products')   return `<div class="tab-content" id="tab-products">${productsTabHTML()}</div>`;
+                if (t.key === 'affiliates') return `<div class="tab-content" id="tab-affiliates">${affiliatesTabHTML()}</div>`;
         return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
             <span class="icon">${t.label.split(' ')[0]}</span>
@@ -802,6 +899,12 @@
         if (allCategories.length === 0) await loadCategories();
         if (allBrands.length === 0)     await loadBrands();
         await loadProducts();
+      }
+     if (tab === 'affiliates') {
+        // Caches needed for dropdowns
+        if (allRetailers.length === 0) await loadRetailers();
+        if (allProducts.length === 0)  await loadProducts();
+        await loadAffiliateLinks();
       }
     }
 
@@ -1684,6 +1787,306 @@
       if (error) { alert('Error: ' + error.message); return; }
       await loadProducts();
     }
+    // ============================================================
+    // ============  AFFILIATE LINKS  =============================
+    // ============================================================
+    function affiliatesTabHTML() {
+      return `
+        <div class="toolbar">
+          <label>Product:
+            <select id="affFilterProduct" onchange="onAffiliateFilterChange()">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>Retailer:
+            <select id="affFilterRetailer" onchange="onAffiliateFilterChange()">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>Country:
+            <select id="affFilterCountry" onchange="onAffiliateFilterChange()">
+              <option value="all">All</option>
+              <option value="US">US</option>
+              <option value="GB">GB</option>
+              <option value="IT">IT</option>
+              <option value="IN">IN</option>
+              <option value="default">default</option>
+            </select>
+          </label>
+          <label>Search:
+            <input type="text" id="affSearchInput" placeholder="Key or URL…" oninput="onAffiliateSearchInput()" style="min-width:180px;" />
+          </label>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="openAffiliateModal()">+ Add Link</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Product</th>
+                <th>Retailer</th>
+                <th>Country</th>
+                <th>Affiliate Key</th>
+                <th>URL</th>
+                <th>Priority</th>
+                <th>Active</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="affiliateTableBody">
+              <tr><td colspan="9" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function loadAffiliateLinks() {
+      const tbody = document.getElementById('affiliateTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Loading…</td></tr>';
+
+      // Ensure caches
+      if (allProducts.length === 0) await loadProducts();
+      if (allRetailers.length === 0) await loadRetailers();
+
+      const { data, error } = await supabaseClient
+        .from('product_affiliate_links')
+        .select('id, product_id, retailer_id, country_code, affiliate_key, link_url, is_active, priority')
+        .order('priority', { ascending: false })
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('loadAffiliateLinks error:', error);
+        tbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      allAffiliateLinks = data || [];
+
+      // Populate product filter (one-time)
+      const prodFilter = document.getElementById('affFilterProduct');
+      if (prodFilter && prodFilter.options.length <= 1) {
+        allProducts
+          .slice()
+          .sort((a,b) => a.name.localeCompare(b.name))
+          .forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = `#${p.id} — ${p.name}`;
+            prodFilter.appendChild(opt);
+          });
+      }
+
+      // Populate retailer filter (one-time)
+      const retFilter = document.getElementById('affFilterRetailer');
+      if (retFilter && retFilter.options.length <= 1) {
+        allRetailers
+          .slice()
+          .sort((a,b) => a.name.localeCompare(b.name))
+          .forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.id;
+            opt.textContent = r.name;
+            retFilter.appendChild(opt);
+          });
+      }
+
+      // Build lookup maps
+      const productMap = {}; allProducts.forEach(p => { productMap[p.id] = p; });
+      const retailerMap = {}; allRetailers.forEach(r => { retailerMap[r.id] = r; });
+
+      // Apply filters
+      let filtered = allAffiliateLinks;
+      if (affiliateFilterProduct !== 'all')  filtered = filtered.filter(l => l.product_id === parseInt(affiliateFilterProduct));
+      if (affiliateFilterRetailer !== 'all') filtered = filtered.filter(l => l.retailer_id === parseInt(affiliateFilterRetailer));
+      if (affiliateFilterCountry !== 'all')  filtered = filtered.filter(l => l.country_code === affiliateFilterCountry);
+      if (affiliateSearchQuery) {
+        const q = affiliateSearchQuery.toLowerCase();
+        filtered = filtered.filter(l =>
+          (l.affiliate_key || '').toLowerCase().includes(q) ||
+          (l.link_url || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No affiliate links match the current filters.</td></tr>';
+        return;
+      }
+
+      let rows = '';
+      filtered.forEach(l => {
+        const product = productMap[l.product_id];
+        const retailer = retailerMap[l.retailer_id];
+        const productName = product ? product.name : `Product #${l.product_id} (missing)`;
+        const retailerName = retailer ? retailer.name : `Retailer #${l.retailer_id} (missing)`;
+        const retailerNetwork = retailer ? retailer.network : '';
+        const displayUrl = l.link_url.length > 50 ? l.link_url.slice(0, 50) + '…' : l.link_url;
+
+        rows += `<tr>
+          <td>${l.id}</td>
+          <td>${escapeHtml(productName)}</td>
+          <td>
+            ${escapeHtml(retailerName)}
+            ${retailerNetwork ? `<span class="badge badge-${escapeHtml(retailerNetwork)}" style="margin-left:6px;">${escapeHtml(retailerNetwork)}</span>` : ''}
+          </td>
+          <td><span class="badge badge-country">${escapeHtml(l.country_code)}</span></td>
+          <td><span class="aff-key-code">${escapeHtml(l.affiliate_key)}</span></td>
+          <td><a href="${escapeHtml(l.link_url)}" target="_blank" rel="noopener" title="${escapeHtml(l.link_url)}">${escapeHtml(displayUrl)}</a></td>
+          <td><span class="priority-pill">${l.priority ?? 0}</span></td>
+          <td>${l.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-inactive">Inactive</span>'}</td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="btn-edit" onclick="editAffiliate(${l.id})">✏️ Edit</button>
+            <button class="btn-danger" onclick="deleteAffiliate(${l.id})">🗑️ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function onAffiliateFilterChange() {
+      affiliateFilterProduct  = document.getElementById('affFilterProduct').value;
+      affiliateFilterRetailer = document.getElementById('affFilterRetailer').value;
+      affiliateFilterCountry  = document.getElementById('affFilterCountry').value;
+      loadAffiliateLinks();
+    }
+
+    function onAffiliateSearchInput() {
+      affiliateSearchQuery = document.getElementById('affSearchInput').value.trim();
+      loadAffiliateLinks();
+    }
+
+    async function openAffiliateModal(link) {
+      const isEdit = !!link;
+
+      if (allProducts.length === 0)  await loadProducts();
+      if (allRetailers.length === 0) await loadRetailers();
+
+      document.getElementById('affiliateModalTitle').textContent = isEdit ? 'Edit Affiliate Link' : 'Add Affiliate Link';
+      document.getElementById('editAffiliateId').value = isEdit ? link.id : '';
+
+      // Populate product dropdown
+      const prodSel = document.getElementById('affiliateProductInput');
+      prodSel.innerHTML = '<option value="">Select product…</option>';
+      allProducts
+        .slice()
+        .sort((a,b) => a.name.localeCompare(b.name))
+        .forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `#${p.id} — ${p.name}`;
+          if (isEdit && p.id === link.product_id) opt.selected = true;
+          prodSel.appendChild(opt);
+        });
+
+      // Populate retailer dropdown
+      const retSel = document.getElementById('affiliateRetailerInput');
+      retSel.innerHTML = '<option value="">Select retailer…</option>';
+      allRetailers
+        .slice()
+        .sort((a,b) => a.name.localeCompare(b.name))
+        .forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r.id;
+          opt.textContent = `${r.name} (${r.network})`;
+          if (isEdit && r.id === link.retailer_id) opt.selected = true;
+          retSel.appendChild(opt);
+        });
+
+      document.getElementById('affiliateCountryInput').value  = isEdit ? link.country_code : '';
+      document.getElementById('affiliateKeyInput').value      = isEdit ? link.affiliate_key : '';
+      document.getElementById('affiliatePriorityInput').value = isEdit ? (link.priority ?? 0) : 0;
+      document.getElementById('affiliateUrlInput').value      = isEdit ? link.link_url : '';
+      document.getElementById('affiliateActiveInput').checked = isEdit ? !!link.is_active : true;
+      document.getElementById('affiliateSaveBtn').textContent = isEdit ? 'Update Link' : 'Save Link';
+
+      document.getElementById('affiliateModal').classList.add('show');
+      setTimeout(() => document.getElementById('affiliateProductInput')?.focus(), 60);
+    }
+
+    function closeAffiliateModal() {
+      document.getElementById('affiliateModal').classList.remove('show');
+      document.getElementById('affiliateForm').reset();
+      document.getElementById('editAffiliateId').value = '';
+    }
+
+    function onAffiliateRetailerChange() {
+      // Placeholder for future: could auto-suggest country codes based on retailer
+    }
+
+    async function saveAffiliate(e) {
+      e.preventDefault();
+      const id = document.getElementById('editAffiliateId').value;
+      const product_id = document.getElementById('affiliateProductInput').value;
+      const retailer_id = document.getElementById('affiliateRetailerInput').value;
+      const country_code = document.getElementById('affiliateCountryInput').value;
+      const affiliate_key = document.getElementById('affiliateKeyInput').value.trim();
+      const priority = parseInt(document.getElementById('affiliatePriorityInput').value) || 0;
+      const link_url = document.getElementById('affiliateUrlInput').value.trim();
+      const is_active = document.getElementById('affiliateActiveInput').checked;
+
+      if (!product_id || !retailer_id || !country_code || !affiliate_key || !link_url) {
+        alert('Please fill in Product, Retailer, Country, Affiliate Key, and URL.');
+        return;
+      }
+
+      const payload = {
+        product_id: parseInt(product_id),
+        retailer_id: parseInt(retailer_id),
+        country_code,
+        affiliate_key,
+        link_url,
+        priority,
+        is_active
+      };
+
+      const btn = document.getElementById('affiliateSaveBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      try {
+        if (id) {
+          const { error } = await supabaseClient
+            .from('product_affiliate_links').update(payload).eq('id', parseInt(id));
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('product_affiliate_links').insert(payload);
+          if (error) throw error;
+        }
+        closeAffiliateModal();
+        await loadAffiliateLinks();
+      } catch (err) {
+        console.error('saveAffiliate error:', err);
+        if (err.code === '23505') {
+          alert('Duplicate: this product + retailer + country + affiliate key already exists.');
+        } else {
+          alert('Error: ' + (err.message || 'Unknown error'));
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Update Link' : 'Save Link';
+      }
+    }
+
+    async function editAffiliate(id) {
+      const link = allAffiliateLinks.find(l => l.id === id);
+      if (!link) { alert('Link not found. Reload the tab.'); return; }
+      await openAffiliateModal(link);
+    }
+
+    async function deleteAffiliate(id) {
+      const link = allAffiliateLinks.find(l => l.id === id);
+      if (!link) return;
+
+      if (!confirm(`Delete affiliate link "${link.affiliate_key}" (${link.country_code})?`)) return;
+
+      const { error } = await supabaseClient
+        .from('product_affiliate_links').delete().eq('id', id);
+      if (error) { alert('Error: ' + error.message); return; }
+      await loadAffiliateLinks();
+    }
 
     // ============================================================
     // UTILITIES
@@ -1705,22 +2108,24 @@
     // ============================================================
     // MODAL — CLOSE ON OVERLAY CLICK / ESC
     // ============================================================
-    ['categoryModal', 'brandModal', 'retailerModal', 'productModal'].forEach(id => {
+        ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', function (e) {
         if (e.target === this) {
           if (id === 'categoryModal') closeCategoryModal();
           if (id === 'brandModal')    closeBrandModal();
           if (id === 'retailerModal') closeRetailerModal();
           if (id === 'productModal')  closeProductModal();
+          if (id === 'affiliateModal') closeAffiliateModal();
         }
       });
     });
-    document.addEventListener('keydown', (e) => {
+       document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeCategoryModal();
         closeBrandModal();
         closeRetailerModal();
         closeProductModal();
+        closeAffiliateModal();
       }
     });
 
