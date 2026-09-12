@@ -1,0 +1,17 @@
+# robots.txt for Zheoa
+
+User-agent: *
+Allow: /
+
+# Block admin and API paths
+Disallow: /admin.html
+Disallow: /admin/
+
+# Block legal pages from crawling (they're still publicly accessible)
+Disallow: /privacy.html
+Disallow: /terms.html
+Disallow: /affiliate-disclosure.html
+Disallow: /cookie-policy.html
+
+# Sitemap
+Sitemap: https://zheoa.github.io/sitemap.xml
