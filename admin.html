@@ -994,17 +994,17 @@
     // ============================================================
     // ADMIN SHELL
     // ============================================================
-    function renderAdmin() {
-      const tabButtons = TABS.map(t =>
-        `<button data-tab="${t.key}" onclick="switchTab('${t.key}')">${t.label}</button>`
-      ).join('');
+       function renderAdmin() {
+      const tabButtons = TABS.map(function(t) {
+        return `<button data-tab="${t.key}" onclick="switchTab('${t.key}')">${t.label}</button>`;
+      }).join('');
 
-      const tabContents = TABS.map(t => {
+      const tabContents = TABS.map(function(t) {
         if (t.key === 'categories') return `<div class="tab-content" id="tab-categories">${categoriesTabHTML()}</div>`;
         if (t.key === 'brands')     return `<div class="tab-content" id="tab-brands">${brandsTabHTML()}</div>`;
         if (t.key === 'retailers')  return `<div class="tab-content" id="tab-retailers">${retailersTabHTML()}</div>`;
         if (t.key === 'products')   return `<div class="tab-content" id="tab-products">${productsTabHTML()}</div>`;
-                if (t.key === 'affiliates') return `<div class="tab-content" id="tab-affiliates">${affiliatesTabHTML()}</div>`;
+        if (t.key === 'affiliates') return `<div class="tab-content" id="tab-affiliates">${affiliatesTabHTML()}</div>`;
         if (t.key === 'articles')   return `<div class="tab-content" id="tab-articles">${articlesTabHTML()}</div>`;
         return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
@@ -1030,9 +1030,9 @@
       `;
       switchTab(currentTab);
     }
-
     async function switchTab(tab) {
       currentTab = tab;
+
       document.querySelectorAll('.tab-nav button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
       });
@@ -1043,23 +1043,25 @@
       if (tab === 'categories') await loadCategories();
       if (tab === 'brands')     await loadBrands();
       if (tab === 'retailers')  await loadRetailers();
+
       if (tab === 'products') {
-        // Ensure caches are ready for the modal dropdowns
         if (allCategories.length === 0) await loadCategories();
         if (allBrands.length === 0)     await loadBrands();
         await loadProducts();
       }
-     if (tab === 'affiliates') {
-        // Caches needed for dropdowns
+
+      if (tab === 'affiliates') {
         if (allRetailers.length === 0) await loadRetailers();
         if (allProducts.length === 0)  await loadProducts();
         await loadAffiliateLinks();
       }
+
       if (tab === 'articles') {
         if (allCategories.length === 0) await loadCategories();
         await loadArticles();
       }
-    // ============================================================
+    }
+        // ============================================================
     // ============  CATEGORIES (unchanged)  ======================
     // ============================================================
     function categoriesTabHTML() {
