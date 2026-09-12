@@ -282,6 +282,14 @@
     .badge-amazon { background: #fff3e0; color: #e65100; }
     .badge-impact { background: #e1f5fe; color: #01579b; }
 
+    .badge-country {
+      background: #e8eaf6;
+      color: #283593;
+      margin-right: 4px;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+    }
+
     .brand-logo-thumb {
       width: 40px;
       height: 40px;
@@ -377,6 +385,41 @@
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
+
+    /* ===== COUNTRY CHECKBOXES ===== */
+    .country-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .country-checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.15s;
+      background: white;
+      user-select: none;
+    }
+    .country-checkbox:hover { border-color: var(--yellow); }
+    .country-checkbox input {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      margin: 0;
+    }
+    .country-checkbox.checked {
+      border-color: var(--yellow-dark);
+      background: var(--yellow-light);
+    }
+
     .form-actions {
       display: flex;
       gap: 12px;
@@ -409,6 +452,7 @@
       .top-bar h1 { font-size: 1.2rem; }
       .tab-nav button { padding: 8px 14px; font-size: 0.78rem; }
       .form-row { grid-template-columns: 1fr; }
+      .country-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -524,6 +568,71 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       RETAILER MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="retailerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="retailerModalTitle">Add New Retailer</h2>
+        <button class="modal-close" onclick="closeRetailerModal()">&times;</button>
+      </div>
+      <form id="retailerForm" onsubmit="saveRetailer(event)">
+        <input type="hidden" id="editRetailerId" value="" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="retailerNameInput">Name *</label>
+            <input type="text" id="retailerNameInput" placeholder="e.g. Amazon US" required oninput="autoSlugRetailer()" />
+          </div>
+          <div class="form-group">
+            <label for="retailerSlugInput">Slug *</label>
+            <input type="text" id="retailerSlugInput" placeholder="e.g. amazon-us" required oninput="this.dataset.userEdited='1'" />
+            <small>URL-friendly. Lowercase, hyphens, no spaces.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="retailerNetworkInput">Network *</label>
+          <select id="retailerNetworkInput" required>
+            <option value="">Select network…</option>
+            <option value="amazon">Amazon Associates</option>
+            <option value="impact">Impact.com</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Supported Countries *</label>
+          <div class="country-grid">
+            <label class="country-checkbox" id="cbox-US">
+              <input type="checkbox" value="US" onchange="onCountryToggle(this)" /> 🇺🇸 US
+            </label>
+            <label class="country-checkbox" id="cbox-GB">
+              <input type="checkbox" value="GB" onchange="onCountryToggle(this)" /> 🇬🇧 GB
+            </label>
+            <label class="country-checkbox" id="cbox-IT">
+              <input type="checkbox" value="IT" onchange="onCountryToggle(this)" /> 🇮🇹 IT
+            </label>
+            <label class="country-checkbox" id="cbox-IN">
+              <input type="checkbox" value="IN" onchange="onCountryToggle(this)" /> 🇮🇳 IN
+            </label>
+          </div>
+          <small>Select the countries this retailer operates in. Use GB for the UK.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="retailerLogoInput">Logo URL</label>
+          <input type="url" id="retailerLogoInput" placeholder="https://…" />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeRetailerModal()">Cancel</button>
+          <button type="submit" class="btn btn-save" id="retailerSaveBtn">Save Retailer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Config -->
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -551,9 +660,11 @@
     // Caches
     let allCategories = [];
     let allBrands = [];
+    let allRetailers = [];
     let categoryFilterAudience = 'all';
     let categoryFilterParent = 'all';
     let brandSearchQuery = '';
+    let retailerFilterNetwork = 'all';
 
     // ============================================================
     // TAB DEFINITIONS
@@ -686,12 +797,9 @@
       ).join('');
 
       const tabContents = TABS.map(t => {
-        if (t.key === 'categories') {
-          return `<div class="tab-content" id="tab-categories">${categoriesTabHTML()}</div>`;
-        }
-        if (t.key === 'brands') {
-          return `<div class="tab-content" id="tab-brands">${brandsTabHTML()}</div>`;
-        }
+        if (t.key === 'categories') return `<div class="tab-content" id="tab-categories">${categoriesTabHTML()}</div>`;
+        if (t.key === 'brands')     return `<div class="tab-content" id="tab-brands">${brandsTabHTML()}</div>`;
+        if (t.key === 'retailers')  return `<div class="tab-content" id="tab-retailers">${retailersTabHTML()}</div>`;
         return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
             <span class="icon">${t.label.split(' ')[0]}</span>
@@ -719,9 +827,6 @@
       switchTab(currentTab);
     }
 
-    // ============================================================
-    // TAB SWITCHING
-    // ============================================================
     function switchTab(tab) {
       currentTab = tab;
 
@@ -734,12 +839,11 @@
 
       if (tab === 'categories') loadCategories();
       if (tab === 'brands')     loadBrands();
+      if (tab === 'retailers')  loadRetailers();
     }
 
     // ============================================================
-    // ============================
-    // CATEGORIES
-    // ============================
+    // ============  CATEGORIES  ==================================
     // ============================================================
     function categoriesTabHTML() {
       return `
@@ -856,8 +960,7 @@
       document.getElementById('categoryModalTitle').textContent = isEdit ? 'Edit Category' : 'Add New Category';
       document.getElementById('editCategoryId').value = isEdit ? category.id : '';
 
-      const audienceSelect = document.getElementById('categoryAudienceInput');
-      audienceSelect.value = isEdit ? category.audience : '';
+      document.getElementById('categoryAudienceInput').value = isEdit ? category.audience : '';
 
       populateCategoryParentDropdown(isEdit ? category.id : null, isEdit ? category.audience : '');
 
@@ -921,21 +1024,13 @@
       const sort_order = parseInt(document.getElementById('categorySortOrderInput').value) || 0;
       const image_url = document.getElementById('categoryImageInput').value.trim();
 
-      if (!audience || !name || !slug) {
-        alert('Please fill in Audience, Name, and Slug.');
-        return;
-      }
-      if (!/^[a-z0-9-]+$/.test(slug)) {
-        alert('Slug can only contain lowercase letters, numbers, and hyphens.');
-        return;
-      }
+      if (!audience || !name || !slug) { alert('Please fill in Audience, Name, and Slug.'); return; }
+      if (!/^[a-z0-9-]+$/.test(slug)) { alert('Slug can only contain lowercase letters, numbers, and hyphens.'); return; }
 
       const payload = {
         audience,
         parent_id: parentRaw ? parseInt(parentRaw) : null,
-        name,
-        slug,
-        sort_order,
+        name, slug, sort_order,
         image_url: image_url || null
       };
 
@@ -945,26 +1040,18 @@
 
       try {
         if (id) {
-          const { error } = await supabaseClient
-            .from('fashion_categories')
-            .update(payload)
-            .eq('id', parseInt(id));
+          const { error } = await supabaseClient.from('fashion_categories').update(payload).eq('id', parseInt(id));
           if (error) throw error;
         } else {
-          const { error } = await supabaseClient
-            .from('fashion_categories')
-            .insert(payload);
+          const { error } = await supabaseClient.from('fashion_categories').insert(payload);
           if (error) throw error;
         }
         closeCategoryModal();
         await loadCategories();
       } catch (err) {
         console.error('saveCategory error:', err);
-        if (err.code === '23505') {
-          alert('Duplicate: a category with this audience + slug already exists.');
-        } else {
-          alert('Error: ' + (err.message || 'Unknown error'));
-        }
+        if (err.code === '23505') alert('Duplicate: a category with this audience + slug already exists.');
+        else alert('Error: ' + (err.message || 'Unknown error'));
       } finally {
         btn.disabled = false;
         btn.textContent = id ? 'Update Category' : 'Save Category';
@@ -986,26 +1073,15 @@
       if (children.length > 0) {
         warning += `\n\n⚠️ This will also delete ${children.length} subcategor${children.length === 1 ? 'y' : 'ies'}. This cannot be undone.`;
       }
-
       if (!confirm(warning)) return;
 
-      const { error } = await supabaseClient
-        .from('fashion_categories')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('deleteCategory error:', error);
-        alert('Error: ' + error.message);
-        return;
-      }
+      const { error } = await supabaseClient.from('fashion_categories').delete().eq('id', id);
+      if (error) { console.error('deleteCategory error:', error); alert('Error: ' + error.message); return; }
       await loadCategories();
     }
 
     // ============================================================
-    // ============================
-    // BRANDS
-    // ============================
+    // ============  BRANDS  ======================================
     // ============================================================
     function brandsTabHTML() {
       return `
@@ -1040,7 +1116,6 @@
     async function loadBrands() {
       const tbody = document.getElementById('brandsTableBody');
       if (!tbody) return;
-
       tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
 
       const { data, error } = await supabaseClient
@@ -1059,9 +1134,7 @@
       let filtered = allBrands;
       if (brandSearchQuery) {
         const q = brandSearchQuery.toLowerCase();
-        filtered = filtered.filter(b =>
-          b.name.toLowerCase().includes(q) || b.slug.toLowerCase().includes(q)
-        );
+        filtered = filtered.filter(b => b.name.toLowerCase().includes(q) || b.slug.toLowerCase().includes(q));
       }
 
       if (filtered.length === 0) {
@@ -1137,21 +1210,10 @@
       const logo_url = document.getElementById('brandLogoInput').value.trim();
       const description = document.getElementById('brandDescriptionInput').value.trim();
 
-      if (!name || !slug) {
-        alert('Please fill in Name and Slug.');
-        return;
-      }
-      if (!/^[a-z0-9-]+$/.test(slug)) {
-        alert('Slug can only contain lowercase letters, numbers, and hyphens.');
-        return;
-      }
+      if (!name || !slug) { alert('Please fill in Name and Slug.'); return; }
+      if (!/^[a-z0-9-]+$/.test(slug)) { alert('Slug can only contain lowercase letters, numbers, and hyphens.'); return; }
 
-      const payload = {
-        name,
-        slug,
-        logo_url: logo_url || null,
-        description: description || null
-      };
+      const payload = { name, slug, logo_url: logo_url || null, description: description || null };
 
       const btn = document.getElementById('brandSaveBtn');
       btn.disabled = true;
@@ -1159,26 +1221,18 @@
 
       try {
         if (id) {
-          const { error } = await supabaseClient
-            .from('brands')
-            .update(payload)
-            .eq('id', parseInt(id));
+          const { error } = await supabaseClient.from('brands').update(payload).eq('id', parseInt(id));
           if (error) throw error;
         } else {
-          const { error } = await supabaseClient
-            .from('brands')
-            .insert(payload);
+          const { error } = await supabaseClient.from('brands').insert(payload);
           if (error) throw error;
         }
         closeBrandModal();
         await loadBrands();
       } catch (err) {
         console.error('saveBrand error:', err);
-        if (err.code === '23505') {
-          alert('Duplicate: a brand with this slug already exists.');
-        } else {
-          alert('Error: ' + (err.message || 'Unknown error'));
-        }
+        if (err.code === '23505') alert('Duplicate: a brand with this slug already exists.');
+        else alert('Error: ' + (err.message || 'Unknown error'));
       } finally {
         btn.disabled = false;
         btn.textContent = id ? 'Update Brand' : 'Save Brand';
@@ -1197,17 +1251,220 @@
 
       if (!confirm(`Delete brand "${brand.name}"?\n\nProducts linked to this brand will have their brand set to blank. This cannot be undone.`)) return;
 
-      const { error } = await supabaseClient
-        .from('brands')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabaseClient.from('brands').delete().eq('id', id);
+      if (error) { console.error('deleteBrand error:', error); alert('Error: ' + error.message); return; }
+      await loadBrands();
+    }
+
+    // ============================================================
+    // ============  RETAILERS  ===================================
+    // ============================================================
+    function retailersTabHTML() {
+      return `
+        <div class="toolbar">
+          <label>Network:
+            <select id="retailerFilterNetwork" onchange="onRetailerFilterChange()">
+              <option value="all">All</option>
+              <option value="amazon">Amazon</option>
+              <option value="impact">Impact.com</option>
+            </select>
+          </label>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="openRetailerModal()">+ Add Retailer</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Logo</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Network</th>
+                <th>Countries</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="retailersTableBody">
+              <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function loadRetailers() {
+      const tbody = document.getElementById('retailersTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading…</td></tr>';
+
+      const { data, error } = await supabaseClient
+        .from('retailers')
+        .select('id, name, slug, network, supported_countries, logo_url')
+        .order('network', { ascending: true })
+        .order('name', { ascending: true });
 
       if (error) {
-        console.error('deleteBrand error:', error);
-        alert('Error: ' + error.message);
+        console.error('loadRetailers error:', error);
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state" style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</td></tr>`;
         return;
       }
-      await loadBrands();
+
+      allRetailers = data || [];
+
+      let filtered = allRetailers;
+      if (retailerFilterNetwork !== 'all') {
+        filtered = filtered.filter(r => r.network === retailerFilterNetwork);
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No retailers match the current filter.</td></tr>';
+        return;
+      }
+
+      let rows = '';
+      filtered.forEach(r => {
+        const logo = r.logo_url
+          ? `<img src="${escapeHtml(r.logo_url)}" alt="${escapeHtml(r.name)}" class="brand-logo-thumb" onerror="this.style.display='none';" />`
+          : `<span class="muted">—</span>`;
+
+        const countries = (r.supported_countries || []).length > 0
+          ? (r.supported_countries || []).map(c => `<span class="badge badge-country">${escapeHtml(c)}</span>`).join('')
+          : '<span class="muted">—</span>';
+
+        rows += `
+          <tr>
+            <td>${r.id}</td>
+            <td>${logo}</td>
+            <td><strong>${escapeHtml(r.name)}</strong></td>
+            <td><code>${escapeHtml(r.slug)}</code></td>
+            <td><span class="badge badge-${escapeHtml(r.network)}">${escapeHtml(r.network)}</span></td>
+            <td>${countries}</td>
+            <td style="text-align:right; white-space:nowrap;">
+              <button class="btn-edit" onclick="editRetailer(${r.id})">✏️ Edit</button>
+              <button class="btn-danger" onclick="deleteRetailer(${r.id})">🗑️ Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function onRetailerFilterChange() {
+      retailerFilterNetwork = document.getElementById('retailerFilterNetwork').value;
+      loadRetailers();
+    }
+
+    function openRetailerModal(retailer) {
+      const isEdit = !!retailer;
+      document.getElementById('retailerModalTitle').textContent = isEdit ? 'Edit Retailer' : 'Add New Retailer';
+      document.getElementById('editRetailerId').value = isEdit ? retailer.id : '';
+
+      document.getElementById('retailerNameInput').value = isEdit ? retailer.name : '';
+      document.getElementById('retailerSlugInput').value = isEdit ? retailer.slug : '';
+      document.getElementById('retailerSlugInput').dataset.userEdited = isEdit ? '1' : '';
+      document.getElementById('retailerNetworkInput').value = isEdit ? retailer.network : '';
+      document.getElementById('retailerLogoInput').value = isEdit ? (retailer.logo_url || '') : '';
+
+      // Reset all country checkboxes, then set the ones that are true
+      const codes = ['US', 'GB', 'IT', 'IN'];
+      const selected = isEdit ? (retailer.supported_countries || []) : [];
+      codes.forEach(code => {
+        const cb = document.querySelector(`#cbox-${code} input`);
+        const label = document.getElementById(`cbox-${code}`);
+        if (cb) {
+          cb.checked = selected.includes(code);
+          label?.classList.toggle('checked', cb.checked);
+        }
+      });
+
+      document.getElementById('retailerSaveBtn').textContent = isEdit ? 'Update Retailer' : 'Save Retailer';
+      document.getElementById('retailerModal').classList.add('show');
+      setTimeout(() => document.getElementById('retailerNameInput')?.focus(), 60);
+    }
+
+    function closeRetailerModal() {
+      document.getElementById('retailerModal').classList.remove('show');
+      document.getElementById('retailerForm').reset();
+      document.getElementById('editRetailerId').value = '';
+      // Clear checkbox visual state
+      ['US', 'GB', 'IT', 'IN'].forEach(code => {
+        document.getElementById(`cbox-${code}`)?.classList.remove('checked');
+      });
+    }
+
+    function autoSlugRetailer() {
+      const nameInput = document.getElementById('retailerNameInput');
+      const slugInput = document.getElementById('retailerSlugInput');
+      if (!slugInput || slugInput.dataset.userEdited === '1') return;
+      slugInput.value = slugify(nameInput.value);
+    }
+
+    function onCountryToggle(cb) {
+      const label = cb.closest('.country-checkbox');
+      if (label) label.classList.toggle('checked', cb.checked);
+    }
+
+    async function saveRetailer(e) {
+      e.preventDefault();
+      const id = document.getElementById('editRetailerId').value;
+      const name = document.getElementById('retailerNameInput').value.trim();
+      const slug = document.getElementById('retailerSlugInput').value.trim().toLowerCase();
+      const network = document.getElementById('retailerNetworkInput').value;
+      const logo_url = document.getElementById('retailerLogoInput').value.trim();
+
+      const codes = ['US', 'GB', 'IT', 'IN'];
+      const supported_countries = codes.filter(code => document.querySelector(`#cbox-${code} input`)?.checked);
+
+      if (!name || !slug || !network) { alert('Please fill in Name, Slug, and Network.'); return; }
+      if (!/^[a-z0-9-]+$/.test(slug)) { alert('Slug can only contain lowercase letters, numbers, and hyphens.'); return; }
+      if (supported_countries.length === 0) { alert('Please select at least one supported country.'); return; }
+
+      const payload = {
+        name, slug, network, supported_countries,
+        logo_url: logo_url || null
+      };
+
+      const btn = document.getElementById('retailerSaveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        if (id) {
+          const { error } = await supabaseClient.from('retailers').update(payload).eq('id', parseInt(id));
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient.from('retailers').insert(payload);
+          if (error) throw error;
+        }
+        closeRetailerModal();
+        await loadRetailers();
+      } catch (err) {
+        console.error('saveRetailer error:', err);
+        if (err.code === '23505') alert('Duplicate: a retailer with this slug already exists.');
+        else alert('Error: ' + (err.message || 'Unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Update Retailer' : 'Save Retailer';
+      }
+    }
+
+    function editRetailer(id) {
+      const retailer = allRetailers.find(r => r.id === id);
+      if (!retailer) { alert('Retailer not found. Reload the tab.'); return; }
+      openRetailerModal(retailer);
+    }
+
+    async function deleteRetailer(id) {
+      const retailer = allRetailers.find(r => r.id === id);
+      if (!retailer) return;
+
+      if (!confirm(`Delete retailer "${retailer.name}"?\n\n⚠️ All affiliate links associated with this retailer will also be deleted. This cannot be undone.`)) return;
+
+      const { error } = await supabaseClient.from('retailers').delete().eq('id', id);
+      if (error) { console.error('deleteRetailer error:', error); alert('Error: ' + error.message); return; }
+      await loadRetailers();
     }
 
     // ============================================================
@@ -1242,10 +1499,14 @@
     document.getElementById('brandModal')?.addEventListener('click', function (e) {
       if (e.target === this) closeBrandModal();
     });
+    document.getElementById('retailerModal')?.addEventListener('click', function (e) {
+      if (e.target === this) closeRetailerModal();
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeCategoryModal();
         closeBrandModal();
+        closeRetailerModal();
       }
     });
 
