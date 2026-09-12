@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Admin — Zheoa</title>
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --yellow: #ffdb10;
+      --yellow-dark: #e6c200;
+      --yellow-darker: #b39b00;
+      --yellow-light: #fff8e1;
+      --bg: #f7f9fc;
+      --surface: #ffffff;
+      --text: #1a1a2e;
+      --muted: #5a5a72;
+      --border: #eaeaea;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
+      --max-width: 1400px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 30px 20px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: var(--max-width); margin: 0 auto; }
+
+    h1, h2, h3 { font-weight: 800; }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .top-bar h1 { font-size: 1.6rem; }
+    .top-bar .user-info {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .logout-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-decoration: underline;
+      font-family: inherit;
+    }
+    .logout-btn:hover { color: var(--text); }
+
+    /* ===== LOGIN ===== */
+    .login-box {
+      max-width: 400px;
+      margin: 80px auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+    .login-box h2 {
+      margin-bottom: 6px;
+      font-size: 1.5rem;
+    }
+    .login-box p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+    .login-box input:focus {
+      outline: none;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(255, 219, 16, 0.2);
+    }
+    .login-box .btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--yellow);
+      color: var(--text);
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .login-box .btn:hover { background: var(--yellow-dark); }
+    .login-box .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error-msg {
+      color: #d32f2f;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      display: none;
+      padding: 10px 14px;
+      background: #ffebee;
+      border-radius: 8px;
+      border-left: 3px solid #d32f2f;
+    }
+
+    /* ===== TABS ===== */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 4px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .tab-nav button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: 0.2s;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .tab-nav button:hover { background: var(--yellow-light); color: var(--text); }
+    .tab-nav button.active { background: var(--yellow); color: var(--text); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ===== PLACEHOLDER CARDS ===== */
+    .placeholder {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 60px 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .placeholder .icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .placeholder h3 {
+      color: var(--text);
+      margin-bottom: 6px;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 700px) {
+      .top-bar h1 { font-size: 1.2rem; }
+      .tab-nav button { padding: 8px 14px; font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <div style="text-align:center; padding: 60px 20px; color: var(--muted);">
+      Loading…
+    </div>
+  </div>
+
+  <!-- Config -->
+  <script src="config.js"></script>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ============================================================
+    // SUPABASE INIT
+    // ============================================================
+    const config = window.ZHEOA_CONFIG || {};
+    if (!config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
+      document.getElementById('app').innerHTML =
+        '<div class="login-box"><h2>Config error</h2><p>config.js is missing SUPABASE_URL or SUPABASE_ANON_KEY.</p></div>';
+      throw new Error('Missing Supabase config');
+    }
+
+    const supabaseClient = window.supabase.createClient(
+      config.SUPABASE_URL,
+      config.SUPABASE_ANON_KEY
+    );
+
+    let currentUser = null;
+    let currentTab = 'dashboard';
+    let isAdmin = false;
+
+    // ============================================================
+    // TAB DEFINITIONS
+    // ============================================================
+    const TABS = [
+      { key: 'dashboard',        label: '📊 Dashboard',       icon: '📊' },
+      { key: 'articles',         label: '📄 Articles',        icon: '📄' },
+      { key: 'products',         label: '👕 Products',        icon: '👕' },
+      { key: 'categories',       label: '🏷️ Categories',      icon: '🏷️' },
+      { key: 'brands',           label: '🏢 Brands',          icon: '🏢' },
+      { key: 'retailers',        label: '🛒 Retailers',       icon: '🛒' },
+      { key: 'affiliates',       label: '🔗 Affiliate Links', icon: '🔗' },
+      { key: 'contexts',         label: '🎯 Combo Contexts',  icon: '🎯' },
+      { key: 'curated',          label: '✨ Curated Combos',  icon: '✨' }
+    ];
+
+    // ============================================================
+    // SESSION CHECK
+    // ============================================================
+    async function checkSession() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+      if (error) {
+        console.warn('Session check error:', error);
+        renderLogin();
+        return;
+      }
+
+      if (!session) {
+        renderLogin();
+        return;
+      }
+
+      currentUser = session.user;
+
+      // Verify admin
+      const { data: adminRow, error: adminErr } = await supabaseClient
+        .from('admin_users')
+        .select('user_id')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+
+      if (adminErr || !adminRow) {
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        renderLogin('Your account is not authorized as an admin. Ask the site owner to add your user ID to the admin_users table.');
+        return;
+      }
+
+      isAdmin = true;
+      renderAdmin();
+    }
+
+    // ============================================================
+    // LOGIN
+    // ============================================================
+    function renderLogin(errorMessage) {
+      document.getElementById('app').innerHTML = `
+        <div class="login-box">
+          <h2>Zheoa Admin</h2>
+          <p>Sign in to manage products, articles, and combos.</p>
+          <input type="email" id="adminEmail" placeholder="Email" autocomplete="username" />
+          <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" />
+          <button class="btn" id="loginBtn" onclick="loginAdmin()">Sign in</button>
+          <div id="loginError" class="error-msg" style="${errorMessage ? 'display:block;' : ''}">${errorMessage || ''}</div>
+        </div>
+      `;
+      setTimeout(() => document.getElementById('adminEmail')?.focus(), 50);
+      document.getElementById('adminPassword')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') loginAdmin();
+      });
+    }
+
+    async function loginAdmin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errorEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+
+      errorEl.style.display = 'none';
+
+      if (!email || !password) {
+        errorEl.textContent = 'Please enter email and password.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          errorEl.textContent = error.message;
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Sign in';
+          return;
+        }
+
+        currentUser = data.user;
+
+        // Verify admin
+        const { data: adminRow, error: adminErr } = await supabaseClient
+          .from('admin_users')
+          .select('user_id')
+          .eq('user_id', currentUser.id)
+          .maybeSingle();
+
+        if (adminErr || !adminRow) {
+          await supabaseClient.auth.signOut();
+          currentUser = null;
+          errorEl.textContent = 'This account is not an admin.';
+          errorEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Sign in';
+          return;
+        }
+
+        isAdmin = true;
+        renderAdmin();
+      } catch (err) {
+        console.error('Login error:', err);
+        errorEl.textContent = 'Unexpected error. Try again.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
+    }
+
+    async function logoutAdmin() {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      isAdmin = false;
+      renderLogin();
+    }
+
+    // ============================================================
+    // ADMIN SHELL
+    // ============================================================
+    function renderAdmin() {
+      const tabButtons = TABS.map(t =>
+        `<button data-tab="${t.key}" onclick="switchTab('${t.key}')">${t.label}</button>`
+      ).join('');
+
+      const tabContents = TABS.map(t =>
+        `<div class="tab-content" id="tab-${t.key}">
+          <div class="placeholder">
+            <span class="icon">${t.icon}</span>
+            <h3>${t.label.replace(/^[^\s]+\s/, '')}</h3>
+            <p>This section will be built in a later step.</p>
+          </div>
+        </div>`
+      ).join('');
+
+      document.getElementById('app').innerHTML = `
+        <div class="container">
+          <div class="top-bar">
+            <h1>🛠️ Zheoa Admin</h1>
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+              <span class="user-info">Signed in as <strong>${escapeHtml(currentUser?.email || 'admin')}</strong></span>
+              <button class="logout-btn" onclick="logoutAdmin()">Sign out</button>
+            </div>
+          </div>
+
+          <nav class="tab-nav">${tabButtons}</nav>
+
+          ${tabContents}
+        </div>
+      `;
+
+      switchTab(currentTab);
+    }
+
+    // ============================================================
+    // TAB SWITCHING
+    // ============================================================
+    function switchTab(tab) {
+      currentTab = tab;
+
+      document.querySelectorAll('.tab-nav button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.toggle('active', el.id === 'tab-' + tab);
+      });
+
+      // Later steps will hook data loading here, e.g.
+      // if (tab === 'products') loadProducts();
+    }
+
+    // ============================================================
+    // UTILITIES
+    // ============================================================
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // ============================================================
+    // START
+    // ============================================================
+    checkSession();
+  </script>
+
+</body>
+</html>
