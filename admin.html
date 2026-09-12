@@ -358,7 +358,75 @@
       font-size: 0.85rem;
       line-height: 1.6;
     }
-  </style>
+        /* Combo Contexts extras */
+    .badge-occasion { background: #fce4ec; color: #ad1457; }
+    .badge-time     { background: #fff3e0; color: #e65100; }
+    .badge-activity { background: #e8f5e9; color: #2e7d32; }
+    .badge-season   { background: #e3f2fd; color: #0d47a1; }
+    .badge-audience { background: #ede7f6; color: #5e35b1; }
+    .badge-attribute{ background: #f5f5f5; color: #424242; }
+    .badge-slot_override { background: #f3e5f5; color: #6a1b9a; }
+
+    .ctx-icon {
+      font-size: 1.4rem;
+      display: inline-block;
+      width: 28px;
+      text-align: center;
+    }
+    .ctx-key-code {
+      background: #f0f2f5;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+    }
+
+    /* Weights modal table */
+    .weights-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+    .weights-table th,
+    .weights-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .weights-table th {
+      background: #fafafa;
+      font-weight: 700;
+      text-align: left;
+    }
+    .weights-table input[type="number"] {
+      width: 100px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .weights-table input[type="number"]:focus {
+      outline: none;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(255, 219, 16, 0.2);
+    }
+    .weights-table .attr-name {
+      font-family: 'Courier New', monospace;
+      color: var(--text);
+    }
+    .weights-hint {
+      background: var(--yellow-light);
+      border-left: 3px solid var(--yellow);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .weights-hint strong { color: var(--text); }
+      </style>
 </head>
 <body>
 
@@ -831,6 +899,98 @@
       </form>
     </div>
   </div>
+    <!-- ============================================================
+       COMBO CONTEXT MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="contextModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="contextModalTitle">Edit Combo Context</h2>
+        <button class="modal-close" onclick="closeContextModal()">&times;</button>
+      </div>
+      <form id="contextForm" onsubmit="saveContext(event)">
+        <input type="hidden" id="editContextId" value="" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contextTypeInput">Type *</label>
+            <select id="contextTypeInput" required>
+              <option value="">Select type…</option>
+              <option value="occasion">Occasion</option>
+              <option value="time">Time of Day</option>
+              <option value="activity">Activity</option>
+              <option value="season">Season</option>
+              <option value="audience">Audience</option>
+              <option value="attribute">Attribute</option>
+              <option value="slot_override">Slot Override</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="contextKeyInput">Key *</label>
+            <input type="text" id="contextKeyInput" placeholder="e.g. beach, party, morning" required />
+            <small>Lowercase, no spaces. Used in URLs and API calls.</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contextDisplayNameInput">Display Name *</label>
+            <input type="text" id="contextDisplayNameInput" placeholder="e.g. Beach Day" required />
+          </div>
+          <div class="form-group">
+            <label for="contextIconInput">Icon (emoji)</label>
+            <input type="text" id="contextIconInput" placeholder="e.g. 🏖️" maxlength="4" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contextDescriptionInput">Description</label>
+          <textarea id="contextDescriptionInput" rows="2" placeholder="Short description of when to use this context…"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contextSortOrderInput">Sort Order</label>
+            <input type="number" id="contextSortOrderInput" value="0" />
+          </div>
+          <div class="form-group checkbox-group" style="padding-top:22px;">
+            <input type="checkbox" id="contextActiveInput" checked />
+            <label for="contextActiveInput" style="margin:0;font-weight:600;font-size:0.9rem;">Active</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeContextModal()">Cancel</button>
+          <button type="submit" class="btn btn-save" id="contextSaveBtn">Save Context</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- ============================================================
+       WEIGHTS MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="weightsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="weightsModalTitle">Scoring Weights</h2>
+        <button class="modal-close" onclick="closeWeightsModal()">&times;</button>
+      </div>
+
+      <div class="weights-hint">
+        <strong>How weights work:</strong> each context can boost or reduce specific attributes during combo scoring.
+        <br>A weight of <code>1.00</code> = neutral. <code>2.00</code> = double emphasis. <code>0.50</code> = half emphasis. <code>0.00</code> = disable.
+      </div>
+
+      <div id="weightsBody">
+        <p class="muted">Loading weights…</p>
+      </div>
+
+      <div class="form-actions" style="border-top:1px solid var(--border);padding-top:16px;margin-top:20px;">
+        <button type="button" class="btn btn-cancel" onclick="closeWeightsModal()">Close</button>
+        <button type="button" class="btn btn-save" id="weightsSaveBtn" onclick="saveWeights()">Save Weights</button>
+      </div>
+    </div>
+  </div>
     <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -872,6 +1032,15 @@
     let articleFilterFeatured = 'all';
     let articleSearchQuery    = '';
     let articleShowDeleted    = false;
+    let allContexts = [];
+    let allWeights = [];
+
+    // Context filters
+    let contextFilterType   = 'all';
+    let contextSearchQuery  = '';
+
+    // Currently edited context for weights modal
+    let weightsEditingContextId = null;
 
     // Filters
     let categoryFilterAudience = 'all';
@@ -1006,6 +1175,7 @@
         if (t.key === 'products')   return `<div class="tab-content" id="tab-products">${productsTabHTML()}</div>`;
         if (t.key === 'affiliates') return `<div class="tab-content" id="tab-affiliates">${affiliatesTabHTML()}</div>`;
         if (t.key === 'articles')   return `<div class="tab-content" id="tab-articles">${articlesTabHTML()}</div>`;
+        if (t.key === 'contexts')   return `<div class="tab-content" id="tab-contexts">${contextsTabHTML()}</div>`;
         return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
             <span class="icon">${t.label.split(' ')[0]}</span>
@@ -1059,6 +1229,10 @@
       if (tab === 'articles') {
         if (allCategories.length === 0) await loadCategories();
         await loadArticles();
+      }
+
+      if (tab === 'contexts') {
+        await loadContexts();
       }
     }
         // ============================================================
@@ -2588,6 +2762,391 @@
       if (error) { alert('Error: ' + error.message); return; }
       await loadArticles();
     }
+    // ============================================================
+    // ============  COMBO CONTEXTS + WEIGHTS  ====================
+    // ============================================================
+    function contextsTabHTML() {
+      return `
+        <div class="toolbar">
+          <label>Type:
+            <select id="ctxFilterType" onchange="onContextFilterChange()">
+              <option value="all">All</option>
+              <option value="occasion">Occasion</option>
+              <option value="time">Time of Day</option>
+              <option value="activity">Activity</option>
+              <option value="season">Season</option>
+              <option value="audience">Audience</option>
+              <option value="attribute">Attribute</option>
+              <option value="slot_override">Slot Override</option>
+            </select>
+          </label>
+          <label>Search:
+            <input type="text" id="ctxSearchInput" placeholder="Name or key…" oninput="onContextSearchInput()" style="min-width:200px;" />
+          </label>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="openContextModal()">+ Add Context</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Icon</th>
+                <th>Type</th>
+                <th>Key</th>
+                <th>Display Name</th>
+                <th>Active</th>
+                <th>Sort</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contextsTableBody">
+              <tr><td colspan="8" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function loadContexts() {
+      const tbody = document.getElementById('contextsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Loading…</td></tr>';
+
+      const { data, error } = await supabaseClient
+        .from('combo_contexts')
+        .select('id, context_type, context_key, display_name, description, icon, is_active, sort_order')
+        .order('context_type', { ascending: true })
+        .order('sort_order', { ascending: true })
+        .order('display_name', { ascending: true });
+
+      if (error) {
+        console.error('loadContexts error:', error);
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      allContexts = data || [];
+
+      // Apply filters
+      let filtered = allContexts;
+      if (contextFilterType !== 'all') {
+        filtered = filtered.filter(c => c.context_type === contextFilterType);
+      }
+      if (contextSearchQuery) {
+        const q = contextSearchQuery.toLowerCase();
+        filtered = filtered.filter(c =>
+          c.display_name.toLowerCase().includes(q) ||
+          c.context_key.toLowerCase().includes(q)
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No contexts match the current filters.</td></tr>';
+        return;
+      }
+
+      const typeLabel = {
+        occasion: 'Occasion', time: 'Time', activity: 'Activity',
+        season: 'Season', audience: 'Audience', attribute: 'Attribute',
+        slot_override: 'Slot Override'
+      };
+
+      let rows = '';
+      filtered.forEach(c => {
+        const icon = c.icon ? `<span class="ctx-icon">${escapeHtml(c.icon)}</span>` : '<span class="muted">—</span>';
+        const typeBadge = `<span class="badge badge-${escapeHtml(c.context_type)}">${escapeHtml(typeLabel[c.context_type] || c.context_type)}</span>`;
+        const activeBadge = c.is_active
+          ? '<span class="badge badge-active">Active</span>'
+          : '<span class="badge badge-inactive">Inactive</span>';
+
+        rows += `<tr>
+          <td>${c.id}</td>
+          <td>${icon}</td>
+          <td>${typeBadge}</td>
+          <td><span class="ctx-key-code">${escapeHtml(c.context_key)}</span></td>
+          <td><strong>${escapeHtml(c.display_name)}</strong></td>
+          <td>${activeBadge}</td>
+          <td>${c.sort_order ?? 0}</td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="btn-edit" onclick="openWeightsModal(${c.id})">⚖️ Weights</button>
+            <button class="btn-edit" onclick="editContext(${c.id})" style="margin-left:6px;">✏️ Edit</button>
+            <button class="btn-danger" onclick="deleteContext(${c.id})">🗑️ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function onContextFilterChange() {
+      contextFilterType = document.getElementById('ctxFilterType').value;
+      loadContexts();
+    }
+
+    function onContextSearchInput() {
+      contextSearchQuery = document.getElementById('ctxSearchInput').value.trim();
+      loadContexts();
+    }
+
+    function openContextModal(context) {
+      const isEdit = !!context;
+      document.getElementById('contextModalTitle').textContent = isEdit ? 'Edit Combo Context' : 'Add New Combo Context';
+      document.getElementById('editContextId').value          = isEdit ? context.id : '';
+      document.getElementById('contextTypeInput').value      = isEdit ? context.context_type : '';
+      document.getElementById('contextKeyInput').value       = isEdit ? context.context_key : '';
+      document.getElementById('contextDisplayNameInput').value = isEdit ? context.display_name : '';
+      document.getElementById('contextIconInput').value      = isEdit ? (context.icon || '') : '';
+      document.getElementById('contextDescriptionInput').value = isEdit ? (context.description || '') : '';
+      document.getElementById('contextSortOrderInput').value = isEdit ? (context.sort_order ?? 0) : 0;
+      document.getElementById('contextActiveInput').checked  = isEdit ? !!context.is_active : true;
+      document.getElementById('contextSaveBtn').textContent  = isEdit ? 'Update Context' : 'Save Context';
+
+      document.getElementById('contextModal').classList.add('show');
+      setTimeout(() => document.getElementById('contextTypeInput')?.focus(), 60);
+    }
+
+    function closeContextModal() {
+      document.getElementById('contextModal').classList.remove('show');
+      document.getElementById('contextForm').reset();
+      document.getElementById('editContextId').value = '';
+    }
+
+    async function saveContext(e) {
+      e.preventDefault();
+      const id = document.getElementById('editContextId').value;
+      const context_type = document.getElementById('contextTypeInput').value;
+      const context_key = document.getElementById('contextKeyInput').value.trim().toLowerCase();
+      const display_name = document.getElementById('contextDisplayNameInput').value.trim();
+      const icon = document.getElementById('contextIconInput').value.trim();
+      const description = document.getElementById('contextDescriptionInput').value.trim();
+      const sort_order = parseInt(document.getElementById('contextSortOrderInput').value) || 0;
+      const is_active = document.getElementById('contextActiveInput').checked;
+
+      if (!context_type || !context_key || !display_name) {
+        alert('Please fill in Type, Key, and Display Name.');
+        return;
+      }
+      if (!/^[a-z0-9_-]+$/.test(context_key)) {
+        alert('Key can only contain lowercase letters, numbers, underscores, and hyphens.');
+        return;
+      }
+
+      const payload = {
+        context_type,
+        context_key,
+        display_name,
+        icon: icon || null,
+        description: description || null,
+        sort_order,
+        is_active
+      };
+
+      const btn = document.getElementById('contextSaveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        if (id) {
+          const { error } = await supabaseClient
+            .from('combo_contexts').update(payload).eq('id', parseInt(id));
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('combo_contexts').insert(payload);
+          if (error) throw error;
+        }
+        closeContextModal();
+        await loadContexts();
+      } catch (err) {
+        console.error('saveContext error:', err);
+        if (err.code === '23505') {
+          alert('Duplicate: a context with this type + key already exists.');
+        } else {
+          alert('Error: ' + (err.message || 'Unknown error'));
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Update Context' : 'Save Context';
+      }
+    }
+
+    function editContext(id) {
+      const context = allContexts.find(c => c.id === id);
+      if (!context) { alert('Context not found. Reload the tab.'); return; }
+      openContextModal(context);
+    }
+
+    async function deleteContext(id) {
+      const context = allContexts.find(c => c.id === id);
+      if (!context) return;
+
+      if (!confirm(`Delete context "${context.display_name}"?\n\n⚠️ All weights and curated combos for this context will be deleted too. This cannot be undone.`)) return;
+
+      const { error } = await supabaseClient
+        .from('combo_contexts').delete().eq('id', id);
+      if (error) { alert('Error: ' + error.message); return; }
+      await loadContexts();
+    }
+
+    // ------------------------------------------------------------
+    // WEIGHTS SUB-MODAL
+    // ------------------------------------------------------------
+    async function openWeightsModal(contextId) {
+      const context = allContexts.find(c => c.id === contextId);
+      if (!context) { alert('Context not found.'); return; }
+
+      weightsEditingContextId = contextId;
+
+      document.getElementById('weightsModalTitle').textContent =
+        `Scoring Weights — ${context.display_name}`;
+
+      const body = document.getElementById('weightsBody');
+      body.innerHTML = '<p class="muted">Loading weights…</p>';
+
+      const { data, error } = await supabaseClient
+        .from('combo_context_weights')
+        .select('id, attribute_name, weight')
+        .eq('context_id', contextId)
+        .order('attribute_name', { ascending: true });
+
+      if (error) {
+        console.error('openWeightsModal error:', error);
+        body.innerHTML = `<p style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</p>`;
+        return;
+      }
+
+      allWeights = data || [];
+
+      renderWeightsTable();
+
+      document.getElementById('weightsModal').classList.add('show');
+    }
+
+    function renderWeightsTable() {
+      const body = document.getElementById('weightsBody');
+
+      if (allWeights.length === 0) {
+        body.innerHTML = `
+          <p class="muted" style="margin-bottom:12px;">No weights defined for this context yet.</p>
+          <button type="button" class="btn-primary btn-sm" onclick="addWeightRow()" style="background:var(--yellow);border-radius:20px;padding:6px 16px;font-weight:700;cursor:pointer;border:none;font-family:inherit;">+ Add Weight</button>
+        `;
+        return;
+      }
+
+      let rows = '';
+      allWeights.forEach((w, idx) => {
+        rows += `<tr>
+          <td class="attr-name">${escapeHtml(w.attribute_name)}</td>
+          <td>
+            <input type="number" step="0.05" min="0" max="10"
+                   data-weight-index="${idx}"
+                   value="${w.weight ?? 1}" />
+          </td>
+          <td style="text-align:right;">
+            <button type="button" class="btn-danger" onclick="removeWeightRow(${idx})">🗑️</button>
+          </td>
+        </tr>`;
+      });
+
+      body.innerHTML = `
+        <table class="weights-table">
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Weight</th>
+              <th style="text-align:right;">Remove</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="margin-top:12px;">
+          <button type="button"
+                  onclick="addWeightRow()"
+                  style="background:var(--yellow);border:none;border-radius:20px;padding:6px 16px;font-weight:700;cursor:pointer;font-family:inherit;">
+            + Add Weight
+          </button>
+        </div>
+      `;
+    }
+
+    function addWeightRow() {
+      const name = prompt('Attribute name (e.g. color, style, material):');
+      if (!name) return;
+      const trimmed = name.trim().toLowerCase();
+      if (!trimmed) return;
+      if (!/^[a-z0-9_-]+$/.test(trimmed)) {
+        alert('Attribute name can only contain lowercase letters, numbers, underscores, and hyphens.');
+        return;
+      }
+      if (allWeights.some(w => w.attribute_name === trimmed)) {
+        alert('This attribute already exists for this context.');
+        return;
+      }
+      allWeights.push({
+        id: null,
+        attribute_name: trimmed,
+        weight: 1.00
+      });
+      renderWeightsTable();
+    }
+
+    function removeWeightRow(idx) {
+      if (!confirm('Remove this weight?')) return;
+      allWeights.splice(idx, 1);
+      renderWeightsTable();
+    }
+
+    function closeWeightsModal() {
+      document.getElementById('weightsModal').classList.remove('show');
+      weightsEditingContextId = null;
+      allWeights = [];
+    }
+
+    async function saveWeights() {
+      if (!weightsEditingContextId) return;
+
+      const btn = document.getElementById('weightsSaveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        // Read current values from inputs
+        document.querySelectorAll('#weightsBody input[data-weight-index]').forEach(input => {
+          const idx = parseInt(input.dataset.weightIndex);
+          const val = parseFloat(input.value);
+          if (!isNaN(val) && allWeights[idx]) {
+            allWeights[idx].weight = val;
+          }
+        });
+
+        // Delete all existing weights for this context, then insert fresh
+        const { error: delErr } = await supabaseClient
+          .from('combo_context_weights')
+          .delete()
+          .eq('context_id', weightsEditingContextId);
+        if (delErr) throw delErr;
+
+        if (allWeights.length > 0) {
+          const rows = allWeights.map(w => ({
+            context_id: weightsEditingContextId,
+            attribute_name: w.attribute_name,
+            weight: w.weight
+          }));
+          const { error: insErr } = await supabaseClient
+            .from('combo_context_weights').insert(rows);
+          if (insErr) throw insErr;
+        }
+
+        closeWeightsModal();
+      } catch (err) {
+        console.error('saveWeights error:', err);
+        alert('Error: ' + (err.message || 'Unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Weights';
+      }
+    }
 
     // ============================================================
     // UTILITIES
@@ -2609,7 +3168,7 @@
     // ============================================================
     // MODAL — CLOSE ON OVERLAY CLICK / ESC
     // ============================================================
-         ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal', 'articleModal'].forEach(id => {
+     ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal', 'articleModal', 'contextModal', 'weightsModal'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', function (e) {
         if (e.target === this) {
           if (id === 'categoryModal')  closeCategoryModal();
@@ -2618,6 +3177,8 @@
           if (id === 'productModal')   closeProductModal();
           if (id === 'affiliateModal') closeAffiliateModal();
           if (id === 'articleModal')   closeArticleModal();
+          if (id === 'contextModal')   closeContextModal();
+          if (id === 'weightsModal')   closeWeightsModal();
         }
       });
     });
@@ -2629,6 +3190,8 @@
         closeProductModal();
         closeAffiliateModal();
         closeArticleModal();
+        closeContextModal();
+        closeWeightsModal();
       }
     });
 
