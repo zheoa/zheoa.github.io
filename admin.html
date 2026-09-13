@@ -643,6 +643,99 @@
       font-size: 0.72rem;
       color: var(--muted);
     }
+    /* SEO / Sitemap */
+    .seo-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .seo-section h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .seo-section p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .seo-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .seo-input {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      min-width: 320px;
+      flex: 1;
+      max-width: 480px;
+    }
+    .seo-input:focus {
+      outline: none;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 0 3px rgba(255, 219, 16, 0.2);
+    }
+    .seo-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+    .seo-check input { cursor: pointer; width: 16px; height: 16px; }
+
+    .seo-stats {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .seo-stats .stat-item { color: var(--muted); }
+    .seo-stats .stat-item strong {
+      color: var(--yellow-darker);
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    .seo-preview {
+      background: #0d1c26;
+      color: #b0c4d0;
+      padding: 16px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      max-height: 360px;
+      overflow: auto;
+      white-space: pre;
+      margin-top: 10px;
+    }
+    .seo-preview .url-line { color: #c9d1d9; }
+    .seo-preview .loc { color: #79c0ff; }
+    .seo-preview .tag { color: #ffa657; }
+
+    .seo-empty {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
  </style>
 </head>
 <body>
@@ -1478,6 +1571,10 @@
     let curatedFilterAudience = 'all';
     let curatedFilterFeatured = 'all';
     
+        // SEO / sitemap state
+    let sitemapGeneratedUrls = [];
+    let sitemapBaseUrl = localStorage.getItem('zheoa_base_url') || 'https://zheoa.github.io';
+    
     let allArticleLinks = [];
 
     // Article link filters
@@ -1499,7 +1596,7 @@
     // ============================================================
     // TAB DEFINITIONS
     // ============================================================
-        const TABS = [
+       const TABS = [
       { key: 'dashboard',      label: '📊 Dashboard' },
       { key: 'articles',       label: '📄 Articles' },
       { key: 'article-links',  label: '📎 Article Links' },
@@ -1509,7 +1606,8 @@
       { key: 'retailers',      label: '🛒 Retailers' },
       { key: 'affiliates',     label: '🔗 Product Links' },
       { key: 'contexts',       label: '🎯 Combo Contexts' },
-      { key: 'curated',        label: '✨ Curated Combos' }
+      { key: 'curated',        label: '✨ Curated Combos' },
+      { key: 'seo',            label: '🗺️ SEO' }
     ];
 
     // ============================================================
@@ -1623,6 +1721,7 @@
         if (t.key === 'contexts')   return `<div class="tab-content" id="tab-contexts">${contextsTabHTML()}</div>`;
         if (t.key === 'curated')    return `<div class="tab-content" id="tab-curated">${curatedTabHTML()}</div>`;
         if (t.key === 'dashboard')  return `<div class="tab-content" id="tab-dashboard">${dashboardTabHTML()}</div>`;
+        if (t.key === 'seo')        return `<div class="tab-content" id="tab-seo">${seoTabHTML()}</div>`;
         return `<div class="tab-content" id="tab-${t.key}">
           <div class="placeholder">
             <span class="icon">${t.label.split(' ')[0]}</span>
@@ -1690,6 +1789,9 @@
 
       if (tab === 'dashboard') {
         await loadDashboard();
+      }
+      if (tab === 'seo') {
+        // Just render the shell; user clicks Generate to fetch fresh URLs
       }
     }
         // ============================================================
@@ -4594,6 +4696,292 @@
       } finally {
         btn.disabled = false;
         btn.textContent = 'Save';
+      }
+    }
+        // ============================================================
+    // ============  SEO / SITEMAP GENERATOR  =====================
+    // ============================================================
+    function seoTabHTML() {
+      return `
+        <div class="seo-section">
+          <h3>🗺️ Sitemap Generator</h3>
+          <p>
+            Pulls every live product, article, and category from Supabase and produces a valid
+            <code>sitemap.xml</code> you can upload to your site root.
+          </p>
+
+          <div class="seo-row">
+            <label style="font-weight:700;font-size:0.88rem;color:var(--muted);white-space:nowrap;">Base URL:</label>
+            <input type="text" id="seoBaseUrl" class="seo-input" value="${escapeHtml(sitemapBaseUrl)}" placeholder="https://zheoa.github.io" />
+          </div>
+
+          <div class="seo-row" style="gap:24px;">
+            <label class="seo-check"><input type="checkbox" id="seoIncludeStatic" checked /> Static pages</label>
+            <label class="seo-check"><input type="checkbox" id="seoIncludeCategories" checked /> Categories</label>
+            <label class="seo-check"><input type="checkbox" id="seoIncludeProducts" checked /> Products</label>
+            <label class="seo-check"><input type="checkbox" id="seoIncludeArticles" checked /> Articles</label>
+          </div>
+
+          <div class="seo-row" style="margin-top:4px;">
+            <button class="btn-primary" id="seoGenerateBtn" onclick="generateSitemap()">⚙️ Generate Sitemap</button>
+            <button class="btn-edit" id="seoDownloadBtn" onclick="downloadSitemap()" disabled style="padding:10px 20px;font-size:0.85rem;">⬇️ Download sitemap.xml</button>
+            <button class="btn-edit" onclick="copySitemapToClipboard()" id="seoCopyBtn" disabled style="padding:10px 20px;font-size:0.85rem;">📋 Copy XML</button>
+          </div>
+
+          <div class="seo-stats" id="seoStats" style="display:none;">
+            <div class="stat-item"><strong id="statTotal">0</strong> total URLs</div>
+            <div class="stat-item"><strong id="statStatic">0</strong> static</div>
+            <div class="stat-item"><strong id="statCats">0</strong> categories</div>
+            <div class="stat-item"><strong id="statProds">0</strong> products</div>
+            <div class="stat-item"><strong id="statArts">0</strong> articles</div>
+          </div>
+        </div>
+
+        <div class="seo-section">
+          <h3>📄 Preview</h3>
+          <div id="seoPreview">
+            <div class="seo-empty">Click <strong>Generate Sitemap</strong> to see a preview of the XML.</div>
+          </div>
+        </div>
+
+        <div class="seo-section">
+          <h3>📤 How to Publish</h3>
+          <p>
+            After downloading, upload <code>sitemap.xml</code> to your repository root (same folder as <code>index.html</code>),
+            commit, and push to GitHub. Then submit the URL below to Google Search Console:
+          </p>
+          <div class="seo-row">
+            <code id="seoSubmitUrl" style="background:#f0f2f5;padding:10px 14px;border-radius:8px;font-family:'Courier New',monospace;font-size:0.9rem;flex:1;max-width:480px;">
+              ${escapeHtml(sitemapBaseUrl)}/sitemap.xml
+            </code>
+            <button class="btn-edit" onclick="copySubmitUrl()" style="padding:8px 16px;font-size:0.82rem;">📋 Copy URL</button>
+          </div>
+        </div>
+
+        <div class="seo-section">
+          <h3>🔗 Google Search Console</h3>
+          <p>One-time setup to get your site indexed:</p>
+          <ol style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin-left:20px;">
+            <li>Go to <a href="https://search.google.com/search-console" target="_blank" rel="noopener" style="color:var(--yellow-darker);font-weight:700;">Google Search Console</a>.</li>
+            <li>Click <strong>Add Property</strong> → choose <strong>URL prefix</strong>.</li>
+            <li>Enter: <code style="background:#f0f2f5;padding:2px 6px;border-radius:4px;">${escapeHtml(sitemapBaseUrl)}</code></li>
+            <li>Verify ownership — easiest is the HTML tag method (paste the meta tag into <code>index.html</code> head).</li>
+            <li>Once verified, go to <strong>Sitemaps</strong> and submit: <code>sitemap.xml</code></li>
+            <li>Google will crawl within 1–7 days.</li>
+          </ol>
+        </div>
+
+        <div class="seo-section">
+          <h3>📌 Pinterest Verification</h3>
+          <p>
+            To claim your domain on Pinterest, add this meta tag to <code>index.html</code> head (replace the content value with your own Pinterest code):
+          </p>
+          <pre style="background:#0d1c26;color:#b0c4d0;padding:14px;border-radius:10px;font-family:'Courier New',monospace;font-size:0.82rem;overflow-x:auto;white-space:pre-wrap;margin-top:8px;">&lt;meta name="p:domain_verify" content="YOUR_PINTEREST_CODE_HERE" /&gt;</pre>
+          <p style="margin-top:12px;font-size:0.85rem;">
+            Get your code from <strong>Pinterest → Settings → Claimed accounts → Claim website</strong>.
+          </p>
+        </div>
+      `;
+    }
+
+    function xmlEscape(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    function urlEncode(str) {
+      return encodeURIComponent(str || '');
+    }
+
+    async function generateSitemap() {
+      const btn = document.getElementById('seoGenerateBtn');
+      const downloadBtn = document.getElementById('seoDownloadBtn');
+      const copyBtn = document.getElementById('seoCopyBtn');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Generating…';
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+
+      try {
+        const baseUrl = document.getElementById('seoBaseUrl').value.trim().replace(/\/+$/, '');
+        if (!baseUrl) {
+          alert('Please enter a base URL.');
+          btn.disabled = false; btn.textContent = '⚙️ Generate Sitemap';
+          return;
+        }
+        sitemapBaseUrl = baseUrl;
+        localStorage.setItem('zheoa_base_url', baseUrl);
+        document.getElementById('seoSubmitUrl').textContent = baseUrl + '/sitemap.xml';
+
+        const includeStatic     = document.getElementById('seoIncludeStatic').checked;
+        const includeCategories = document.getElementById('seoIncludeCategories').checked;
+        const includeProducts   = document.getElementById('seoIncludeProducts').checked;
+        const includeArticles   = document.getElementById('seoIncludeArticles').checked;
+
+        const now = new Date().toISOString().split('T')[0];
+
+        // ---- Fetch data in parallel ----
+        const [catsRes, prodsRes, artsRes] = await Promise.all([
+          includeCategories
+            ? supabaseClient.from('fashion_categories').select('slug, audience, updated_at, created_at')
+            : Promise.resolve({ data: [] }),
+          includeProducts
+            ? supabaseClient.from('products').select('slug, updated_at, created_at').eq('status', 'published').is('deleted_at', null)
+            : Promise.resolve({ data: [] }),
+          includeArticles
+            ? supabaseClient.from('articles').select('slug, updated_at, created_at').is('deleted_at', null)
+            : Promise.resolve({ data: [] })
+        ]);
+
+        const categories = catsRes.data || [];
+        const products   = prodsRes.data || [];
+        const articles   = artsRes.data || [];
+
+        // ---- Build URL list ----
+        const urls = [];
+
+        if (includeStatic) {
+          urls.push({ loc: `${baseUrl}/`,                lastmod: now, changefreq: 'daily',   priority: '1.0' });
+          urls.push({ loc: `${baseUrl}/combo.html`,       lastmod: now, changefreq: 'daily',   priority: '0.95' });
+          urls.push({ loc: `${baseUrl}/shop.html`,        lastmod: now, changefreq: 'daily',   priority: '0.9' });
+          urls.push({ loc: `${baseUrl}/women.html`,       lastmod: now, changefreq: 'weekly',  priority: '0.9' });
+          urls.push({ loc: `${baseUrl}/men.html`,         lastmod: now, changefreq: 'weekly',  priority: '0.9' });
+          urls.push({ loc: `${baseUrl}/kids.html`,        lastmod: now, changefreq: 'weekly',  priority: '0.9' });
+          urls.push({ loc: `${baseUrl}/privacy.html`,     lastmod: now, changefreq: 'yearly',  priority: '0.3' });
+          urls.push({ loc: `${baseUrl}/terms.html`,       lastmod: now, changefreq: 'yearly',  priority: '0.3' });
+          urls.push({ loc: `${baseUrl}/affiliate-disclosure.html`, lastmod: now, changefreq: 'yearly', priority: '0.3' });
+          urls.push({ loc: `${baseUrl}/cookie-policy.html`,        lastmod: now, changefreq: 'yearly', priority: '0.3' });
+        }
+
+        if (includeCategories) {
+          categories.forEach(c => {
+            if (!c.slug || !c.audience) return;
+            const lastmod = (c.updated_at || c.created_at || '').split('T')[0] || now;
+            urls.push({
+              loc: `${baseUrl}/category.html?audience=${urlEncode(c.audience)}&slug=${urlEncode(c.slug)}`,
+              lastmod, changefreq: 'weekly', priority: '0.7'
+            });
+          });
+        }
+
+        if (includeProducts) {
+          products.forEach(p => {
+            if (!p.slug) return;
+            const lastmod = (p.updated_at || p.created_at || '').split('T')[0] || now;
+            urls.push({
+              loc: `${baseUrl}/product.html?slug=${urlEncode(p.slug)}`,
+              lastmod, changefreq: 'weekly', priority: '0.75'
+            });
+          });
+        }
+
+        if (includeArticles) {
+          articles.forEach(a => {
+            if (!a.slug) return;
+            const lastmod = (a.updated_at || a.created_at || '').split('T')[0] || now;
+            urls.push({
+              loc: `${baseUrl}/article.html?slug=${urlEncode(a.slug)}`,
+              lastmod, changefreq: 'monthly', priority: '0.8'
+            });
+          });
+        }
+
+        // ---- Build XML ----
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+        urls.forEach(u => {
+          xml += '  <url>\n';
+          xml += `    <loc>${xmlEscape(u.loc)}</loc>\n`;
+          xml += `    <lastmod>${u.lastmod}</lastmod>\n`;
+          xml += `    <changefreq>${u.changefreq}</changefreq>\n`;
+          xml += `    <priority>${u.priority}</priority>\n`;
+          xml += '  </url>\n';
+        });
+        xml += '</urlset>\n';
+
+        sitemapGeneratedUrls = urls;
+
+        // ---- Update stats ----
+        document.getElementById('seoStats').style.display = 'flex';
+        document.getElementById('statTotal').textContent = urls.length;
+        document.getElementById('statStatic').textContent = includeStatic ? 10 : 0;
+        document.getElementById('statCats').textContent = categories.length;
+        document.getElementById('statProds').textContent = products.length;
+        document.getElementById('statArts').textContent = articles.length;
+
+        // ---- Preview ----
+        const previewEl = document.getElementById('seoPreview');
+        const lines = xml.split('\n');
+        // Show first 80 lines + "..." if longer
+        const previewLines = lines.slice(0, 80).map(line => {
+          return escapeHtml(line)
+            .replace(/&lt;loc&gt;(.*?)&lt;\/loc&gt;/g, '<span class="tag">&lt;loc&gt;</span><span class="loc">$1</span><span class="tag">&lt;/loc&gt;</span>')
+            .replace(/&lt;([a-z]+)&gt;/g, '<span class="tag">&lt;$1&gt;</span>')
+            .replace(/&lt;\/([a-z]+)&gt;/g, '<span class="tag">&lt;/$1&gt;</span>');
+        }).join('\n');
+        const extra = lines.length > 80 ? `\n\n... and ${lines.length - 80} more lines` : '';
+        previewEl.innerHTML = `<div class="seo-preview">${previewLines}${escapeHtml(extra)}</div>`;
+
+        // ---- Enable download / copy ----
+        downloadBtn.disabled = false;
+        copyBtn.disabled = false;
+
+        // Store XML for download
+        window._zheoaSitemapXML = xml;
+
+      } catch (err) {
+        console.error('generateSitemap error:', err);
+        alert('Error generating sitemap: ' + (err.message || 'Unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚙️ Generate Sitemap';
+      }
+    }
+
+    function downloadSitemap() {
+      const xml = window._zheoaSitemapXML;
+      if (!xml) { alert('Generate the sitemap first.'); return; }
+
+      const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sitemap.xml';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function copySitemapToClipboard() {
+      const xml = window._zheoaSitemapXML;
+      if (!xml) { alert('Generate the sitemap first.'); return; }
+
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(xml);
+          alert('Sitemap XML copied to clipboard.');
+        } else {
+          prompt('Copy this XML:', xml);
+        }
+      } catch (err) {
+        prompt('Copy this XML:', xml);
+      }
+    }
+
+    function copySubmitUrl() {
+      const base = document.getElementById('seoBaseUrl').value.trim().replace(/\/+$/, '');
+      const url = base + '/sitemap.xml';
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(url).then(() => alert('URL copied.')).catch(() => prompt('Copy:', url));
+      } else {
+        prompt('Copy:', url);
       }
     }
     // ============================================================
