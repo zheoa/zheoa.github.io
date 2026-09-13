@@ -741,6 +741,52 @@
         description: product.description || `Shop ${product.name} on Zheoa.`,
         image: product.image_url
       });
+
+      // [SCHEMA ADDED] Inject Product schema without offers initially.
+      // It will be re-injected with the resolved affiliate URL in rewriteAffiliateLinks().
+      addProductSchema();
+    }
+
+    // ============================================================
+    // [SCHEMA ADDED] PRODUCT SCHEMA (JSON-LD, no ratings to avoid penalty)
+    // ============================================================
+    function addProductSchema(offerUrl) {
+      if (!product) return;
+
+      // Remove any prior Product schema so we always leave exactly one tag
+      document.querySelectorAll('script[type="application/ld+json"][data-schema="product"]').forEach(s => s.remove());
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": product.description || undefined,
+        "sku": String(product.id),
+        "url": window.location.href,
+        "category": category ? category.name : undefined,
+        "brand": brand ? { "@type": "Brand", "name": brand.name } : undefined,
+        "image": allImages.length > 0 ? allImages : undefined
+      };
+
+      // Only add offers when we have a real resolved affiliate URL
+      if (offerUrl && offerUrl !== '#') {
+        schema.offers = {
+          "@type": "Offer",
+          "url": offerUrl,
+          "availability": "https://schema.org/InStock"
+        };
+      }
+
+      // Strip undefined fields (otherwise JSON.stringify leaves nulls in place)
+      Object.keys(schema).forEach(k => {
+        if (schema[k] === undefined) delete schema[k];
+      });
+
+      const tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.setAttribute('data-schema', 'product');
+      tag.textContent = JSON.stringify(schema, null, 2);
+      document.head.appendChild(tag);
     }
 
     function switchImage(idx, thumbEl) {
@@ -778,6 +824,9 @@
         btn.dataset.retailerId = pick.retailer_id;
         btn.dataset.affiliateKey = pick.affiliate_key;
         btn.classList.remove('disabled');
+
+        // [SCHEMA UPDATE] Re-inject schema now that we know the affiliate URL
+        addProductSchema(pick.link_url);
       }
     }
 
