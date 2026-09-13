@@ -2325,10 +2325,9 @@
           <td>${recBadge}</td>
           <td style="text-align:right; white-space:nowrap;">
             ${isDeleted
-              ? `<button class="btn-restore" onclick="restoreArticle(${a.id})">♻️ Restore</button>`
-              : `<button class="btn-edit" onclick="editArticle(${a.id})">✏️ Edit</button>
-                 <button class="btn-attach" onclick="openAttachProductsModal(${a.id})">🛍️ Products</button>
-                 <button class="btn-danger" onclick="deleteArticle(${a.id})">🗑️ Delete</button>`}
+              ? `<button class="btn-restore" onclick="restoreProduct(${p.id})">♻️ Restore</button>`
+              : `<button class="btn-edit" onclick="editProduct(${p.id})">✏️ Edit</button>
+                 <button class="btn-danger" onclick="deleteProduct(${p.id})">🗑️ Delete</button>`}
           </td>
         </tr>`;
       });
@@ -3026,6 +3025,7 @@
             ${isDeleted
               ? `<button class="btn-restore" onclick="restoreArticle(${a.id})">♻️ Restore</button>`
               : `<button class="btn-edit" onclick="editArticle(${a.id})">✏️ Edit</button>
+                 <button class="btn-attach" onclick="openAttachProductsModal(${a.id})">🛍️ Products</button>
                  <button class="btn-danger" onclick="deleteArticle(${a.id})">🗑️ Delete</button>`}
           </td>
         </tr>`;
