@@ -539,6 +539,110 @@
     @media (max-width: 700px) {
       .dash-two-col { grid-template-columns: 1fr; }
     }
+        /* Article Links & Attach Products */
+    .btn-attach {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+      margin-left: 6px;
+    }
+    .btn-attach:hover { background: #c8e6c9; }
+
+    .attach-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: white;
+      transition: 0.15s;
+    }
+    .attach-item:hover { border-color: var(--yellow); }
+    .attach-item img {
+      width: 46px; height: 46px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+    .attach-item .attach-info { flex: 1; min-width: 0; }
+    .attach-item .attach-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .attach-item .attach-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .attach-item .attach-actions {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .attach-item .btn-move {
+      background: #f0f0f0;
+      border: none;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-family: inherit;
+      transition: 0.15s;
+    }
+    .attach-item .btn-move:hover:not(:disabled) { background: var(--yellow); }
+    .attach-item .btn-move:disabled { opacity: 0.3; cursor: not-allowed; }
+    .attach-item .btn-remove {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border: none;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-family: inherit;
+    }
+    .attach-item .btn-remove:hover { background: #ffcdd2; }
+
+    .attach-search-result {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: 0.12s;
+    }
+    .attach-search-result:last-child { border-bottom: none; }
+    .attach-search-result:hover { background: var(--yellow-light); }
+    .attach-search-result img {
+      width: 36px; height: 36px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+    .attach-search-result .sr-name {
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+    .attach-search-result .sr-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
  </style>
 </head>
 <body>
@@ -1218,6 +1322,93 @@
       </form>
     </div>
   </div>
+    <!-- ============================================================
+       ARTICLE AFFILIATE LINK MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="articleLinkModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="articleLinkModalTitle">Add Article Link</h2>
+        <button class="modal-close" onclick="closeArticleLinkModal()">&times;</button>
+      </div>
+      <form id="articleLinkForm" onsubmit="saveArticleLink(event)">
+        <input type="hidden" id="editArticleLinkId" value="" />
+
+        <div class="form-group">
+          <label for="articleLinkArticleInput">Article *</label>
+          <select id="articleLinkArticleInput" required>
+            <option value="">Select article…</option>
+          </select>
+          <small>These links correspond to <code>data-affiliate-key</code> inside the article's HTML content.</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="articleLinkCountryInput">Country *</label>
+            <select id="articleLinkCountryInput" required>
+              <option value="">Select country…</option>
+              <option value="US">🇺🇸 US</option>
+              <option value="GB">🇬🇧 GB</option>
+              <option value="IT">🇮🇹 IT</option>
+              <option value="IN">🇮🇳 IN</option>
+              <option value="default">🌐 default (fallback)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="articleLinkKeyInput">Affiliate Key *</label>
+            <input type="text" id="articleLinkKeyInput" placeholder="e.g. amazon_us_black_party_dress" required />
+            <small>Must match the <code>data-affiliate-key</code> in the article HTML.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="articleLinkUrlInput">Link URL *</label>
+          <input type="url" id="articleLinkUrlInput" placeholder="https://www.amazon.com/…" required />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" onclick="closeArticleLinkModal()">Cancel</button>
+          <button type="submit" class="btn btn-save" id="articleLinkSaveBtn">Save Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ATTACH PRODUCTS MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="attachProductsModal">
+    <div class="modal" style="max-width:900px;">
+      <div class="modal-header">
+        <h2 id="attachProductsModalTitle">Attach Products</h2>
+        <button class="modal-close" onclick="closeAttachProductsModal()">&times;</button>
+      </div>
+
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">
+        These products appear in the "Shop the Look" section on the article page.
+      </p>
+
+      <div style="margin-bottom:20px;">
+        <label style="font-weight:700;font-size:0.85rem;display:block;margin-bottom:6px;">Add a product</label>
+        <input type="text" id="attachProductSearch" placeholder="Search by name…" oninput="onAttachProductSearch()"
+               style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.95rem;" />
+        <div id="attachProductSearchResults" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;display:none;background:white;"></div>
+      </div>
+
+      <h3 style="font-size:0.9rem;font-weight:800;margin:0 0 10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">
+        Attached products (<span id="attachCount">0</span>)
+      </h3>
+
+      <div id="attachProductsList" style="min-height:100px;">
+        <p style="color:var(--muted);text-align:center;padding:24px;font-size:0.9rem;">No products attached yet. Search above to add one.</p>
+      </div>
+
+      <div class="form-actions" style="border-top:1px solid var(--border);padding-top:16px;margin-top:20px;">
+        <button type="button" class="btn btn-cancel" onclick="closeAttachProductsModal()">Cancel</button>
+        <button type="button" class="btn btn-save" id="attachProductsSaveBtn" onclick="saveAttachedProducts()">Save</button>
+      </div>
+    </div>
+  </div>
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1286,6 +1477,18 @@
     let curatedFilterContext  = 'all';
     let curatedFilterAudience = 'all';
     let curatedFilterFeatured = 'all';
+    
+    let allArticleLinks = [];
+
+    // Article link filters
+    let articleLinkFilterArticle = 'all';
+    let articleLinkFilterCountry = 'all';
+    let articleLinkSearchQuery   = '';
+
+    // Attach-products modal state
+    let attachArticleId   = null;
+    let attachItems       = [];   // [{ product_id, name, image_url, brand_id }]
+    let attachSearchTimer = null;
 
     // Dashboard state
     let dashRange       = '30d';
@@ -1296,16 +1499,17 @@
     // ============================================================
     // TAB DEFINITIONS
     // ============================================================
-    const TABS = [
-      { key: 'dashboard',  label: '📊 Dashboard' },
-      { key: 'articles',   label: '📄 Articles' },
-      { key: 'products',   label: '👕 Products' },
-      { key: 'categories', label: '🏷️ Categories' },
-      { key: 'brands',     label: '🏢 Brands' },
-      { key: 'retailers',  label: '🛒 Retailers' },
-      { key: 'affiliates', label: '🔗 Affiliate Links' },
-      { key: 'contexts',   label: '🎯 Combo Contexts' },
-      { key: 'curated',    label: '✨ Curated Combos' }
+        const TABS = [
+      { key: 'dashboard',      label: '📊 Dashboard' },
+      { key: 'articles',       label: '📄 Articles' },
+      { key: 'article-links',  label: '📎 Article Links' },
+      { key: 'products',       label: '👕 Products' },
+      { key: 'categories',     label: '🏷️ Categories' },
+      { key: 'brands',         label: '🏢 Brands' },
+      { key: 'retailers',      label: '🛒 Retailers' },
+      { key: 'affiliates',     label: '🔗 Product Links' },
+      { key: 'contexts',       label: '🎯 Combo Contexts' },
+      { key: 'curated',        label: '✨ Curated Combos' }
     ];
 
     // ============================================================
@@ -1415,6 +1619,7 @@
         if (t.key === 'products')   return `<div class="tab-content" id="tab-products">${productsTabHTML()}</div>`;
         if (t.key === 'affiliates') return `<div class="tab-content" id="tab-affiliates">${affiliatesTabHTML()}</div>`;
         if (t.key === 'articles')   return `<div class="tab-content" id="tab-articles">${articlesTabHTML()}</div>`;
+         if (t.key === 'article-links') return `<div class="tab-content" id="tab-article-links">${articleLinksTabHTML()}</div>`;
         if (t.key === 'contexts')   return `<div class="tab-content" id="tab-contexts">${contextsTabHTML()}</div>`;
         if (t.key === 'curated')    return `<div class="tab-content" id="tab-curated">${curatedTabHTML()}</div>`;
         if (t.key === 'dashboard')  return `<div class="tab-content" id="tab-dashboard">${dashboardTabHTML()}</div>`;
@@ -1468,9 +1673,9 @@
         await loadAffiliateLinks();
       }
 
-      if (tab === 'articles') {
-        if (allCategories.length === 0) await loadCategories();
-        await loadArticles();
+      if (tab === 'article-links') {
+        if (allArticles.length === 0) await loadArticles();
+        await loadArticleLinks();
       }
 
       if (tab === 'contexts') {
@@ -2120,9 +2325,10 @@
           <td>${recBadge}</td>
           <td style="text-align:right; white-space:nowrap;">
             ${isDeleted
-              ? `<button class="btn-restore" onclick="restoreProduct(${p.id})">♻️ Restore</button>`
-              : `<button class="btn-edit" onclick="editProduct(${p.id})">✏️ Edit</button>
-                 <button class="btn-danger" onclick="deleteProduct(${p.id})">🗑️ Delete</button>`}
+              ? `<button class="btn-restore" onclick="restoreArticle(${a.id})">♻️ Restore</button>`
+              : `<button class="btn-edit" onclick="editArticle(${a.id})">✏️ Edit</button>
+                 <button class="btn-attach" onclick="openAttachProductsModal(${a.id})">🛍️ Products</button>
+                 <button class="btn-danger" onclick="deleteArticle(${a.id})">🗑️ Delete</button>`}
           </td>
         </tr>`;
       });
@@ -3946,6 +4152,450 @@
         if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = '🔄 Refresh'; }
       }
     }
+        // ============================================================
+    // ============  ARTICLE LINKS  ===============================
+    // ============================================================
+    function articleLinksTabHTML() {
+      return `
+        <div class="toolbar">
+          <label>Article:
+            <select id="alFilterArticle" onchange="onArticleLinkFilterChange()">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>Country:
+            <select id="alFilterCountry" onchange="onArticleLinkFilterChange()">
+              <option value="all">All</option>
+              <option value="US">US</option>
+              <option value="GB">GB</option>
+              <option value="IT">IT</option>
+              <option value="IN">IN</option>
+              <option value="default">default</option>
+            </select>
+          </label>
+          <label>Search:
+            <input type="text" id="alSearchInput" placeholder="Affiliate key or URL…" oninput="onArticleLinkSearchInput()" style="min-width:200px;" />
+          </label>
+          <div class="spacer"></div>
+          <button class="btn-primary" onclick="openArticleLinkModal()">+ Add Link</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Article</th>
+                <th>Country</th>
+                <th>Affiliate Key</th>
+                <th>URL</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="articleLinksTableBody">
+              <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function loadArticleLinks() {
+      const tbody = document.getElementById('articleLinksTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
+
+      const { data, error } = await supabaseClient
+        .from('affiliate_links')
+        .select('id, article_id, country_code, affiliate_key, link_url')
+        .order('article_id', { ascending: true })
+        .order('country_code', { ascending: true })
+        .order('affiliate_key', { ascending: true });
+
+      if (error) {
+        console.error('loadArticleLinks error:', error);
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state" style="color:var(--danger-text);">⚠️ ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      allArticleLinks = data || [];
+
+      // Build article map
+      const articleMap = {};
+      allArticles.forEach(a => { articleMap[a.id] = a; });
+
+      // Populate article filter (one-time)
+      const artFilter = document.getElementById('alFilterArticle');
+      if (artFilter && artFilter.options.length <= 1) {
+        allArticles
+          .slice()
+          .sort((a, b) => a.title.localeCompare(b.title))
+          .forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.id;
+            opt.textContent = `#${a.id} — ${a.title}`;
+            artFilter.appendChild(opt);
+          });
+      }
+
+      let filtered = allArticleLinks;
+      if (articleLinkFilterArticle !== 'all') filtered = filtered.filter(l => l.article_id === parseInt(articleLinkFilterArticle));
+      if (articleLinkFilterCountry !== 'all') filtered = filtered.filter(l => l.country_code === articleLinkFilterCountry);
+      if (articleLinkSearchQuery) {
+        const q = articleLinkSearchQuery.toLowerCase();
+        filtered = filtered.filter(l =>
+          (l.affiliate_key || '').toLowerCase().includes(q) ||
+          (l.link_url || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No article links match the current filters.</td></tr>';
+        return;
+      }
+
+      let rows = '';
+      filtered.forEach(l => {
+        const article = articleMap[l.article_id];
+        const articleTitle = article ? article.title : `Article #${l.article_id} (missing)`;
+        const displayUrl = l.link_url.length > 50 ? l.link_url.slice(0, 50) + '…' : l.link_url;
+
+        rows += `<tr>
+          <td>${l.id}</td>
+          <td>${escapeHtml(articleTitle)}</td>
+          <td><span class="badge badge-country">${escapeHtml(l.country_code)}</span></td>
+          <td><span class="aff-key-code">${escapeHtml(l.affiliate_key)}</span></td>
+          <td><a href="${escapeHtml(l.link_url)}" target="_blank" rel="noopener" title="${escapeHtml(l.link_url)}">${escapeHtml(displayUrl)}</a></td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="btn-edit" onclick="editArticleLink(${l.id})">✏️ Edit</button>
+            <button class="btn-danger" onclick="deleteArticleLink(${l.id})">🗑️ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    function onArticleLinkFilterChange() {
+      articleLinkFilterArticle = document.getElementById('alFilterArticle').value;
+      articleLinkFilterCountry = document.getElementById('alFilterCountry').value;
+      loadArticleLinks();
+    }
+
+    function onArticleLinkSearchInput() {
+      articleLinkSearchQuery = document.getElementById('alSearchInput').value.trim();
+      loadArticleLinks();
+    }
+
+    async function openArticleLinkModal(link) {
+      const isEdit = !!link;
+      if (allArticles.length === 0) await loadArticles();
+
+      document.getElementById('articleLinkModalTitle').textContent = isEdit ? 'Edit Article Link' : 'Add Article Link';
+      document.getElementById('editArticleLinkId').value = isEdit ? link.id : '';
+
+      // Populate article dropdown
+      const artSel = document.getElementById('articleLinkArticleInput');
+      artSel.innerHTML = '<option value="">Select article…</option>';
+      allArticles
+        .slice()
+        .sort((a, b) => a.title.localeCompare(b.title))
+        .forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.id;
+          opt.textContent = `#${a.id} — ${a.title}`;
+          if (isEdit && a.id === link.article_id) opt.selected = true;
+          artSel.appendChild(opt);
+        });
+
+      document.getElementById('articleLinkCountryInput').value = isEdit ? link.country_code : '';
+      document.getElementById('articleLinkKeyInput').value     = isEdit ? link.affiliate_key : '';
+      document.getElementById('articleLinkUrlInput').value     = isEdit ? link.link_url : '';
+      document.getElementById('articleLinkSaveBtn').textContent = isEdit ? 'Update Link' : 'Save Link';
+
+      document.getElementById('articleLinkModal').classList.add('show');
+      setTimeout(() => document.getElementById('articleLinkArticleInput')?.focus(), 60);
+    }
+
+    function closeArticleLinkModal() {
+      document.getElementById('articleLinkModal').classList.remove('show');
+      document.getElementById('articleLinkForm').reset();
+      document.getElementById('editArticleLinkId').value = '';
+    }
+
+    async function saveArticleLink(e) {
+      e.preventDefault();
+      const id = document.getElementById('editArticleLinkId').value;
+      const article_id = document.getElementById('articleLinkArticleInput').value;
+      const country_code = document.getElementById('articleLinkCountryInput').value;
+      const affiliate_key = document.getElementById('articleLinkKeyInput').value.trim();
+      const link_url = document.getElementById('articleLinkUrlInput').value.trim();
+
+      if (!article_id || !country_code || !affiliate_key || !link_url) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const payload = {
+        article_id: parseInt(article_id),
+        country_code,
+        affiliate_key,
+        link_url
+      };
+
+      const btn = document.getElementById('articleLinkSaveBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      try {
+        if (id) {
+          const { error } = await supabaseClient.from('affiliate_links').update(payload).eq('id', parseInt(id));
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient.from('affiliate_links').insert(payload);
+          if (error) throw error;
+        }
+        closeArticleLinkModal();
+        await loadArticleLinks();
+      } catch (err) {
+        console.error('saveArticleLink error:', err);
+        if (err.code === '23505') alert('Duplicate: this article + country + affiliate key already exists.');
+        else alert('Error: ' + (err.message || 'Unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Update Link' : 'Save Link';
+      }
+    }
+
+    async function editArticleLink(id) {
+      const link = allArticleLinks.find(l => l.id === id);
+      if (!link) { alert('Link not found. Reload the tab.'); return; }
+      await openArticleLinkModal(link);
+    }
+
+    async function deleteArticleLink(id) {
+      const link = allArticleLinks.find(l => l.id === id);
+      if (!link) return;
+      if (!confirm(`Delete link "${link.affiliate_key}" (${link.country_code})?`)) return;
+
+      const { error } = await supabaseClient.from('affiliate_links').delete().eq('id', id);
+      if (error) { alert('Error: ' + error.message); return; }
+      await loadArticleLinks();
+    }
+
+    // ============================================================
+    // ============  ATTACH PRODUCTS TO ARTICLE  ==================
+    // ============================================================
+    async function openAttachProductsModal(articleId) {
+      const article = allArticles.find(a => a.id === articleId);
+      if (!article) { alert('Article not found. Reload the tab.'); return; }
+
+      attachArticleId = articleId;
+      attachItems = [];
+
+      document.getElementById('attachProductsModalTitle').textContent = `Attach Products — ${article.title}`;
+      document.getElementById('attachProductSearch').value = '';
+      document.getElementById('attachProductSearchResults').style.display = 'none';
+      document.getElementById('attachProductSearchResults').innerHTML = '';
+
+      // Load existing attached products
+      const { data: rows, error } = await supabaseClient
+        .from('article_products')
+        .select('product_id, position')
+        .eq('article_id', articleId)
+        .order('position', { ascending: true });
+
+      if (error) {
+        console.error('Load attach rows error:', error);
+      }
+
+      if (rows && rows.length > 0) {
+        const pids = rows.map(r => r.product_id).filter(Boolean);
+        const { data: products } = await supabaseClient
+          .from('products')
+          .select('id, name, image_url, brand_id')
+          .in('id', pids);
+
+        const pmap = {};
+        (products || []).forEach(p => { pmap[p.id] = p; });
+
+        // Preserve order from rows
+        attachItems = rows
+          .map(r => pmap[r.product_id])
+          .filter(Boolean);
+      }
+
+      renderAttachList();
+      document.getElementById('attachProductsModal').classList.add('show');
+    }
+
+    function closeAttachProductsModal() {
+      document.getElementById('attachProductsModal').classList.remove('show');
+      attachArticleId = null;
+      attachItems = [];
+      clearTimeout(attachSearchTimer);
+    }
+
+    function renderAttachList() {
+      const list = document.getElementById('attachProductsList');
+      const count = document.getElementById('attachCount');
+      count.textContent = attachItems.length;
+
+      if (attachItems.length === 0) {
+        list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:24px;font-size:0.9rem;">No products attached yet. Search above to add one.</p>';
+        return;
+      }
+
+      const brandMap = {};
+      allBrands.forEach(b => { brandMap[b.id] = b; });
+
+      let html = '';
+      attachItems.forEach((p, idx) => {
+        const brand = p.brand_id && brandMap[p.brand_id] ? brandMap[p.brand_id].name : '';
+        const img = p.image_url
+          ? `<img src="${escapeHtml(p.image_url)}" onerror="this.style.display='none';" />`
+          : `<div style="width:46px;height:46px;background:#fafafa;border-radius:8px;border:1px solid var(--border);flex-shrink:0;"></div>`;
+
+        html += `<div class="attach-item">
+          ${img}
+          <div class="attach-info">
+            <div class="attach-name">${escapeHtml(p.name)}</div>
+            <div class="attach-meta">${escapeHtml(brand)} • position ${idx + 1}</div>
+          </div>
+          <div class="attach-actions">
+            <button type="button" class="btn-move" onclick="moveAttachItem(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>↑</button>
+            <button type="button" class="btn-move" onclick="moveAttachItem(${idx}, 1)" ${idx === attachItems.length - 1 ? 'disabled' : ''}>↓</button>
+            <button type="button" class="btn-remove" onclick="removeAttachItem(${idx})">×</button>
+          </div>
+        </div>`;
+      });
+
+      list.innerHTML = html;
+    }
+
+    function moveAttachItem(idx, dir) {
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= attachItems.length) return;
+      const [item] = attachItems.splice(idx, 1);
+      attachItems.splice(newIdx, 0, item);
+      renderAttachList();
+    }
+
+    function removeAttachItem(idx) {
+      attachItems.splice(idx, 1);
+      renderAttachList();
+    }
+
+    function onAttachProductSearch() {
+      clearTimeout(attachSearchTimer);
+      attachSearchTimer = setTimeout(runAttachSearch, 250);
+    }
+
+    async function runAttachSearch() {
+      const q = document.getElementById('attachProductSearch').value.trim();
+      const resultsEl = document.getElementById('attachProductSearchResults');
+
+      if (q.length < 2) {
+        resultsEl.style.display = 'none';
+        resultsEl.innerHTML = '';
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, image_url, brand_id, status')
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .ilike('name', `%${q}%`)
+        .order('name', { ascending: true })
+        .limit(15);
+
+      if (error || !data || data.length === 0) {
+        resultsEl.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:0.88rem;text-align:center;">No products found.</div>';
+        resultsEl.style.display = 'block';
+        return;
+      }
+
+      const brandMap = {};
+      allBrands.forEach(b => { brandMap[b.id] = b; });
+
+      const attachedIds = new Set(attachItems.map(p => p.id));
+
+      let html = '';
+      data.forEach(p => {
+        const isAttached = attachedIds.has(p.id);
+        const brand = p.brand_id && brandMap[p.brand_id] ? brandMap[p.brand_id].name : '';
+        const img = p.image_url
+          ? `<img src="${escapeHtml(p.image_url)}" onerror="this.style.display='none';" />`
+          : `<div style="width:36px;height:36px;background:#fafafa;border-radius:6px;flex-shrink:0;"></div>`;
+
+        html += `<div class="attach-search-result" ${isAttached ? 'style="opacity:0.5;pointer-events:none;"' : `onclick="addAttachItem(${p.id})"`}>
+          ${img}
+          <div style="flex:1;min-width:0;">
+            <div class="sr-name">${escapeHtml(p.name)}</div>
+            <div class="sr-meta">${escapeHtml(brand)} ${isAttached ? '• already attached' : ''}</div>
+          </div>
+        </div>`;
+      });
+
+      resultsEl.innerHTML = html;
+      resultsEl.style.display = 'block';
+    }
+
+    async function addAttachItem(productId) {
+      if (attachItems.some(p => p.id === productId)) return;
+
+      const { data, error } = await supabaseClient
+        .from('products')
+        .select('id, name, image_url, brand_id')
+        .eq('id', productId)
+        .maybeSingle();
+
+      if (error || !data) { alert('Could not load product.'); return; }
+
+      attachItems.push(data);
+      renderAttachList();
+
+      // Clear search box
+      document.getElementById('attachProductSearch').value = '';
+      document.getElementById('attachProductSearchResults').style.display = 'none';
+      document.getElementById('attachProductSearchResults').innerHTML = '';
+    }
+
+    async function saveAttachedProducts() {
+      if (!attachArticleId) return;
+
+      const btn = document.getElementById('attachProductsSaveBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      try {
+        // Delete all existing rows for this article
+        const { error: delErr } = await supabaseClient
+          .from('article_products')
+          .delete()
+          .eq('article_id', attachArticleId);
+        if (delErr) throw delErr;
+
+        // Re-insert current list
+        if (attachItems.length > 0) {
+          const rows = attachItems.map((p, idx) => ({
+            article_id: attachArticleId,
+            product_id: p.id,
+            position: idx
+          }));
+          const { error: insErr } = await supabaseClient
+            .from('article_products')
+            .insert(rows);
+          if (insErr) throw insErr;
+        }
+
+        closeAttachProductsModal();
+      } catch (err) {
+        console.error('saveAttachedProducts error:', err);
+        alert('Error: ' + (err.message || 'Unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save';
+      }
+    }
     // ============================================================
     // UTILITIES
     // ============================================================
@@ -3966,7 +4616,7 @@
     // ============================================================
     // MODAL — CLOSE ON OVERLAY CLICK / ESC
     // ============================================================
-     ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal', 'articleModal', 'contextModal', 'weightsModal','curatedModal'].forEach(id => {
+    ['categoryModal', 'brandModal', 'retailerModal', 'productModal', 'affiliateModal', 'articleModal', 'contextModal', 'weightsModal', 'curatedModal', 'articleLinkModal', 'attachProductsModal'].forEach(id => {
       document.getElementById(id)?.addEventListener('click', function (e) {
         if (e.target === this) {
           if (id === 'categoryModal')  closeCategoryModal();
@@ -3978,6 +4628,8 @@
           if (id === 'contextModal')   closeContextModal();
           if (id === 'weightsModal')   closeWeightsModal();
           if (id === 'curatedModal')   closeCuratedModal();
+          if (id === 'articleLinkModal')   closeArticleLinkModal();
+          if (id === 'attachProductsModal') closeAttachProductsModal();
         }
       });
     });
@@ -3992,6 +4644,8 @@
         closeContextModal();
         closeWeightsModal();
         closeCuratedModal();
+        closeArticleLinkModal();
+        closeAttachProductsModal();
       }
     });
 
